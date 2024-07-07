@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 // Módulos
 import { SharedModule } from '../shared/shared.module';
+import { ComponentsModule } from '../components/components.module';
 
 
 // Componentes
@@ -33,6 +34,7 @@ import { PagesComponent } from './pages.component';
     FormsModule,
     SharedModule,
     RouterModule,
+    ComponentsModule,
   ]
 })
 export class PagesModule { }
