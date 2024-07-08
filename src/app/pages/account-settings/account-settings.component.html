@@ -4,12 +4,12 @@
       <div class="card-body">
 
         <h4>Seleccione el tema</h4>
-
+        <!-- working -->
         <div class="r-panel-body">
           <ul id="themecolors" class="m-t-20">
             <li><b>Con el sidebar claro</b></li>
             <li>
-              <a data-theme="default" class="selector default-theme">1</a>
+              <a (click)="changeTheme('default')" data-theme="default" class="selector default-theme working">1</a>
             </li>
             <li><a (click)="changeTheme('green')" data-theme="green" class="selector green-theme">2</a></li>
             <li><a (click)="changeTheme('red')" data-theme="red" class="selector red-theme">3</a></li>
@@ -30,7 +30,7 @@
               <a (click)="changeTheme('red-dark')" data-theme="red-dark" class="selector red-dark-theme">9</a>
             </li>
             <li>
-              <a (click)="changeTheme('blue-dark')" data-theme="blue-dark" class="selector blue-dark-theme working"
+              <a (click)="changeTheme('blue-dark')" data-theme="blue-dark" class="selector blue-dark-theme"
                 >10</a
               >
             </li>
