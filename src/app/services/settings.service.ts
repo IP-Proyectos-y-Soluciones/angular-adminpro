@@ -13,6 +13,10 @@ export class SettingsService {
     this.linkTheme?.setAttribute('href', url);
   };
 
+  /**
+   * @name changeTheme
+   * @param theme {string}
+   */
   changeTheme( theme: string ) {
     
     const url = `./assets/css/colors/${ theme }.css`;
