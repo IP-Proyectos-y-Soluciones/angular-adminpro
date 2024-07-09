@@ -7,20 +7,31 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PromesasComponent implements OnInit {
   ngOnInit(): void {
-    const promesa = new Promise(( resolve, reject ) => {
-      if ( false ) {
-        resolve('Hola Mundo!!');
-      } else {
-        reject('Algo salío mal');
-      }
+
+    this.getUsuarios().then(( users ) => {
+      console.log( users );
     });
 
-    promesa
-      .then(( mensaje ) => {
-        console.log( mensaje );
-      })
-      .catch(( error ) => console.error( 'Error en la promesa', error ));
+    // const promesa = new Promise(( resolve, reject ) => {
+    //   if ( false ) {
+    //     resolve('Hola Mundo!!');
+    //   } else {
+    //     reject('Algo salío mal');
+    //   }
+    // });
+    // promesa
+    //   .then(( mensaje ) => {
+    //     console.log( mensaje );
+    //   })
+    //   .catch(( error ) => console.error( 'Error en la promesa', error ));
+    // console.log('Fin del init');
+  }
 
-    console.log('Fin del init');
-  };
+  getUsuarios() {
+    return  new Promise( resolve => {
+      fetch( 'https://reqres.in/api/users' )
+        .then(( resp ) => resp.json())
+        .then(( body ) => resolve( body.data ));
+    });
+  }
 }
