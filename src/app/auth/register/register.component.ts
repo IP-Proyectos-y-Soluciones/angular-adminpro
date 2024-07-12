@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { UsuarioService } from '../../services/usuario.service';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -12,19 +14,19 @@ export class RegisterComponent {
 
   public registerForm = this.fb.group({
     name: [
-      '',
+      'Test16',
       [ Validators.required, Validators.minLength( 6 ), Validators.maxLength( 30 ) ],
     ],
     email: [ 
-      '', 
+      'test16@correso.com', 
       [ Validators.required, Validators.email ], 
     ],
     password: [ 
-      '', 
+      '123456', 
       [ Validators.required, Validators.minLength( 6 ), Validators.maxLength( 16 ) ], 
     ],
     password2: [ 
-      '', 
+      '123456', 
       [ Validators.required, Validators.minLength( 6 ), Validators.maxLength( 16 ) ], 
     ],
     terms: [ false, Validators.required ],
@@ -32,7 +34,16 @@ export class RegisterComponent {
     Validators: this.passwordsIguales( 'password', 'password2' ),
   });
 
-  constructor( private fb: FormBuilder ) {}
+  /**
+   * @description Constructor del componente RegisterComponent.
+   * Inicializa las dependencias necesarias para el formulario reactivo y el servicio de usuario.
+   * @param fb { FormBuilder } - Servicio de Angular para construir formularios reactivos.
+   * @param usuarioService { UsuarioService } - Servicio personalizado para gestionar las operaciones relacionadas con el usuario, como el registro y autenticación.
+   */
+  constructor( 
+    private fb: FormBuilder, 
+    private usuarioService: UsuarioService 
+  ) {}
 
   /**
    * @name crearUsuario
@@ -42,11 +53,18 @@ export class RegisterComponent {
     this.formSubmitted = true;
     console.log( this.registerForm.value );
 
-    if ( this.registerForm.valid ) {
-      console.log( 'Posteando formulario' );
-    } else {
-      console.log( 'Formulario no es correcto' );
+    if ( this.registerForm.invalid ) {
+      return;
     };
+
+    /**
+     * Realizar el posteo
+     */
+    this.usuarioService.crearUsuario( this.registerForm.value )
+      .subscribe( resp => {
+        console.log( 'Usuario creado!!' );
+        console.log( resp );
+      }, ( err ) => console.warn( err.error.msg, 'error' ));
   };
 
   /**
