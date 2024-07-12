@@ -17,11 +17,11 @@ export class LoginComponent {
 
   public loginForm = this.fb.group({
     email: [ 
-      'test16@correso.com', 
+      localStorage.getItem( 'email' ) || '', 
       [ Validators.required, Validators.email ], 
     ],
     password: [ 
-      '123456', 
+      '', 
       [ Validators.required, Validators.minLength( 6 ), Validators.maxLength( 16 ) ], 
     ],
     rememberMe: [ false ],
@@ -50,7 +50,14 @@ export class LoginComponent {
     
     this.usuarioService.login( this.loginForm.value as LoginForm )
       .subscribe( resp => {
-      console.log( resp )
+      
+      if ( this.loginForm.get( 'rememberMe' )?.value ) {
+        const email = this.loginForm.get( 'email' )?.value ?? '';
+        localStorage.setItem( 'email', email.toString() );
+      } else {
+        localStorage.removeItem( 'email' );
+      };
+
     }, ( err ) => {
       /**
       * Si sucede un error
