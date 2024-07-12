@@ -13,21 +13,39 @@ export class RegisterComponent {
 
   public formSubmitted = false;
 
+  /**
+  * @name registerForm
+  * @description Este es un formulario reactivo que gestiona los datos de registro del usuario.
+  * Incluye los siguientes campos:
+  * - `name`: Cadena de texto que representa el nombre del usuario, con validaciones para que sea obligatorio 
+  *   y tenga entre 6 y 30 caracteres.
+  * - `email`: Cadena de texto que representa el correo electrónico del usuario, con validaciones para que sea 
+  *   obligatorio y esté en formato de correo electrónico válido.
+  * - `password`: Cadena de texto que representa la contraseña del usuario, con validaciones para que sea 
+  *   obligatoria y tenga entre 6 y 16 caracteres.
+  * - `password2`: Cadena de texto que representa la confirmación de la contraseña, con las mismas validaciones 
+  *   que el campo `password`.
+  * - `terms`: Booleano que indica si el usuario ha aceptado los términos y condiciones, con validación 
+  *   obligatoria.
+  * 
+  * Además, se aplica una validación personalizada (`passwordsIguales`) para asegurar que los campos de 
+  * contraseña y confirmación de contraseña coincidan.
+  */
   public registerForm = this.fb.group({
     name: [
-      'Test16',
+      '',
       [ Validators.required, Validators.minLength( 6 ), Validators.maxLength( 30 ) ],
     ],
     email: [ 
-      'test16@correso.com', 
+      '', 
       [ Validators.required, Validators.email ], 
     ],
     password: [ 
-      '123456', 
+      '', 
       [ Validators.required, Validators.minLength( 6 ), Validators.maxLength( 16 ) ], 
     ],
     password2: [ 
-      '123456', 
+      '', 
       [ Validators.required, Validators.minLength( 6 ), Validators.maxLength( 16 ) ], 
     ],
     terms: [ false, Validators.required ],
