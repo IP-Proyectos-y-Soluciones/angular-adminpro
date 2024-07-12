@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 import { UsuarioService } from '../../services/usuario.service';
 
@@ -46,9 +47,18 @@ export class RegisterComponent {
   ) {}
 
   /**
-   * @name crearUsuario
-   * @returns
-   */
+  * @name crearUsuario
+  * @description Este método maneja la lógica de creación de un nuevo usuario.
+  * Establece la propiedad `formSubmitted` en `true`, verifica si el formulario 
+  * es válido y, si lo es, envía los datos del formulario a través del servicio 
+  * `usuarioService` para realizar una solicitud POST. 
+  * 
+  * En caso de éxito, se registra la respuesta en la consola. 
+  * Si ocurre un error durante la creación del usuario, se muestra un mensaje 
+  * de error utilizando Swal (SweetAlert).
+  * 
+  * @returns { void } - No retorna ningún valor.
+  */
   crearUsuario() {
     this.formSubmitted = true;
     console.log( this.registerForm.value );
@@ -64,7 +74,12 @@ export class RegisterComponent {
       .subscribe( resp => {
         console.log( 'Usuario creado!!' );
         console.log( resp );
-      }, ( err ) => console.warn( err.error.msg, 'error' ));
+      }, ( err ) => {
+        /**
+         * Si sucede un error
+         */
+        Swal.fire( 'Error', err.error.msg, 'error' );
+      });
   };
 
   /**

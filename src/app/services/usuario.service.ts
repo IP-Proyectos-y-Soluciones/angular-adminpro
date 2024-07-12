@@ -15,7 +15,7 @@ export class UsuarioService {
  * @name constructor
  * @description Inicializa el servicio inyectando una instancia de HttpClient, 
  * que se utiliza para realizar solicitudes HTTP.
- * @param {HttpClient} http - El cliente HTTP de Angular utilizado para enviar solicitudes HTTP al servidor.
+ * @param { HttpClient } http - El cliente HTTP de Angular utilizado para enviar solicitudes HTTP al servidor.
  */
   constructor( private http: HttpClient ) { }
 
