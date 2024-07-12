@@ -71,11 +71,22 @@
                 formControlName="terms"
               />
               <label for="checkbox-signup">
-                I agree to all <a href="#">Terms</a></label
-              >
+                I agree to all 
+                <a href="#">Terms</a>
+              </label>
             </div>
           </div>
         </div>
+
+        <div class="row">
+          <div class="col text-danger">
+            <p *ngIf="campoNoValido( 'name' )">* El nombre es Obligatorio</p>
+            <p *ngIf="campoNoValido( 'email' )">* El email es Obligatorio y debe ser Válido</p>
+            <!-- <p *ngIf="contrasenasNoValidas()">* Las contraseñas deben de ser iguales, tener mínimo 6 caráteres y máximo 16</p> -->
+            <p *ngIf="aceptaTerminos()">* Debe de aceptar los terminos de uso</p>
+          </div>
+        </div>
+
         <div class="form-group text-center m-t-20">
           <div class="col-xs-12">
             <button
