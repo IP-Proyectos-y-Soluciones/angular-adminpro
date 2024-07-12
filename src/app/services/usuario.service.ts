@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { LoginForm } from '../interfaces/login-form.interface';
+import { tap } from 'rxjs/operators';
 
 const base_url = environment.base_url;
 
@@ -29,7 +30,13 @@ export class UsuarioService {
   * @returns { Observable<any> } - Retorna un observable que se puede suscribir para manejar la respuesta del servidor.
   */
   crearUsuario( formData: RegisterForm ) {
-    return this.http.post( `${ base_url }/usuarios`, formData );
+    return this.http.post( `${ base_url }/usuarios`, formData )
+      .pipe( 
+        tap(( resp: any ) => {
+          localStorage.setItem( 'token', resp.token );
+          // console.log( resp );
+        })
+      );
   };
 
   /**
@@ -41,6 +48,12 @@ export class UsuarioService {
   * @returns { Observable<any> } - Retorna un observable que emite la respuesta del servidor.
   */
   login( formData: LoginForm ) {
-    return this.http.post( `${ base_url }/login`, formData );
+    return this.http.post( `${ base_url }/login`, formData )
+      .pipe( 
+        tap(( resp: any ) => {
+          localStorage.setItem( 'token', resp.token );
+          // console.log( resp );
+        })
+      );
   };
 }
