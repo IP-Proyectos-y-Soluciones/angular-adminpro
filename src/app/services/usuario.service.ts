@@ -4,7 +4,8 @@ import { environment } from '../../environments/environment';
 
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { LoginForm } from '../interfaces/login-form.interface';
-import { tap } from 'rxjs/operators';
+import { tap, map, catchError } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 const base_url = environment.base_url;
 
@@ -14,12 +15,37 @@ const base_url = environment.base_url;
 export class UsuarioService {
 
   /**
- * @name constructor
- * @description Inicializa el servicio inyectando una instancia de HttpClient, 
- * que se utiliza para realizar solicitudes HTTP.
- * @param { HttpClient } http - El cliente HTTP de Angular utilizado para enviar solicitudes HTTP al servidor.
- */
+  * @name constructor
+  * @description Inicializa el servicio inyectando una instancia de HttpClient, 
+  * que se utiliza para realizar solicitudes HTTP.
+  * @param { HttpClient } http - El cliente HTTP de Angular utilizado para enviar solicitudes HTTP al servidor.
+  */
   constructor( private http: HttpClient ) { }
+
+  /**
+  * @name validarToken
+  * @description Este método se encarga de validar el token almacenado en el localStorage 
+  * realizando una solicitud HTTP al servidor. Si el token es válido, se actualiza el token 
+  * en el localStorage y el método retorna un Observable que emite `true`. Si ocurre un error, 
+  * el Observable emite `false`.
+  * @returns { Observable<boolean> } Un Observable que emite `true` si el token es válido y `false` en caso de error.
+  */
+  validarToken(): Observable<boolean> {
+    const token = localStorage.getItem( 'token' ) || '';
+
+    return this.http.get( `${ base_url }/login/renew`, {
+      headers: { 
+        'x-token': token 
+      }
+    }).pipe(
+      tap(( resp: any ) => {
+        localStorage.setItem( 'token', resp.token );
+        // console.log( resp );
+      }),
+      map(( resp: any )  => true ),
+      catchError( error => of( false ))
+    );
+  };
 
   /**
   * @name crearUsuario
@@ -57,6 +83,12 @@ export class UsuarioService {
       );
   };
 
+  /**
+  * @name loginGoogle
+  * @description Este método envía una solicitud POST al servidor para autenticar a un usuario utilizando Google.
+  * Utiliza el token de inicio de sesión de Google y envía este token al endpoint `/login/google`.
+  * @param { string } token - El token de inicio de sesión de Google.
+  */
   loginGoogle( token: string ) {
     return this.http.post( `${ base_url }/login/google`, { token } )
       .pipe( 

@@ -20,6 +20,11 @@ export class LoginComponent implements AfterViewInit {
   public formSubmitted = false;
   public auth2: any;
 
+  /**
+  * @description Define un formulario reactivo para el inicio de sesión utilizando `FormBuilder`.
+  * Inicializa los campos `email`, `password` y `rememberMe` con sus respectivos validadores.
+  * El campo `email` se inicializa con el valor almacenado en `localStorage` (si existe).
+  */
   public loginForm = this.fb.group({
     email: [ 
       localStorage.getItem( 'email' ) || '', 
@@ -59,6 +64,12 @@ export class LoginComponent implements AfterViewInit {
     this.googleInit();
   };
 
+  /**
+  * @name googleInit
+  * @description Este método inicializa la autenticación con Google. Configura el cliente de autenticación de Google
+  * utilizando el `client_id` y establece el callback para manejar la respuesta de credenciales.
+  * También renderiza el botón de inicio de sesión de Google en el elemento especificado.
+  */
   googleInit() {
     google.accounts.id.initialize({
       client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
@@ -72,14 +83,31 @@ export class LoginComponent implements AfterViewInit {
     );
   };
 
+  /**
+  * @name handleCredentialResponse
+  * @description Este método se ejecuta cuando se selecciona el botón de inicio de sesión con Google.
+  * Obtiene el token de inicio de sesión de Google desde la respuesta y lo utiliza para realizar el login en el backend
+  * utilizando el servicio `UsuarioService`. Si el login es exitoso, navega al dashboard.
+  */
   handleCredentialResponse( response: any ) {
     // console.log( "Encoded JWT ID token: " + response.credential );
     this.usuarioService.loginGoogle( response.credential ).subscribe( resp => {
       // console.log({ login: resp });
-      this.router.navigateByUrl('/');
+      /**
+      * Navegar al Dashboard
+      */
+      this.router.navigateByUrl( '/' );
     });
   };
 
+  /**
+  * @name login
+  * @description Este método se ejecuta cuando se envía el formulario de inicio de sesión.
+  * Valida el formulario y realiza el posteo de los datos al backend utilizando el servicio `UsuarioService`.
+  * Si la respuesta del servidor es exitosa y la opción "Remember me" está seleccionada, almacena el correo electrónico en el `localStorage`.
+  * Si "Remember me" no está seleccionada, elimina el correo electrónico del `localStorage`.
+  * Navega al dashboard en caso de éxito y muestra un mensaje de error si ocurre un problema.
+  */
   login() {
     
     this.usuarioService.login( this.loginForm.value as LoginForm )
@@ -95,7 +123,7 @@ export class LoginComponent implements AfterViewInit {
       /**
       * Navegar al Dashboard
       */
-      this.router.navigateByUrl('/');
+      this.router.navigateByUrl( '/' );
 
     }, ( err ) => {
       /**

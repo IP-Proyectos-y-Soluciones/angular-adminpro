@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 
@@ -58,9 +59,11 @@ export class RegisterComponent {
    * Inicializa las dependencias necesarias para el formulario reactivo y el servicio de usuario.
    * @param fb { FormBuilder } - Servicio de Angular para construir formularios reactivos.
    * @param usuarioService { UsuarioService } - Servicio personalizado para gestionar las operaciones relacionadas con el usuario, como el registro y autenticación.
+   * @param router { Router } - Servicio de Angular para manejar la navegación entre rutas.
    */
   constructor( 
     private fb: FormBuilder, 
+    private router: Router,
     private usuarioService: UsuarioService 
   ) {}
 
@@ -90,8 +93,12 @@ export class RegisterComponent {
      */
     this.usuarioService.crearUsuario( this.registerForm.value )
       .subscribe( resp => {
-        console.log( 'Usuario creado!!' );
-        console.log( resp );
+        // console.log( 'Usuario creado!!' );
+        // console.log( resp );
+        /**
+        * Navegar al Dashboard
+        */
+        this.router.navigateByUrl( '/' );
       }, ( err ) => {
         /**
          * Si sucede un error
