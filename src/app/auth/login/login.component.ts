@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -6,14 +6,19 @@ import Swal from 'sweetalert2';
 import { UsuarioService } from '../../services/usuario.service';
 import { LoginForm } from '../../interfaces/login-form.interface';
 
+declare const google: any;
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: [ './login.component.css' ],
 })
-export class LoginComponent {
+export class LoginComponent implements AfterViewInit {
+
+  @ViewChild( 'googleBtn' ) googleBtn!: ElementRef;
 
   public formSubmitted = false;
+  public auth2: any;
 
   public loginForm = this.fb.group({
     email: [ 
@@ -41,10 +46,35 @@ export class LoginComponent {
   * relacionadas con los usuarios, como la creación de nuevos usuarios.
   */
   constructor( 
-    private router: Router, 
     private fb: FormBuilder,
+    private router: Router, 
     private usuarioService: UsuarioService,
   ){}
+
+  /**
+  * @description Este método se ejecuta después de que Angular haya inicializado el componente.
+  * En este caso, se utiliza para manejar la redirección al inicio de sesión cuando el usuario ya está autenticado.
+  */
+  ngAfterViewInit (): void {
+    this.googleInit();
+  };
+
+  googleInit() {
+    google.accounts.id.initialize({
+      client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
+      callback: this.handleCredentialResponse,
+    });
+
+    google.accounts.id.renderButton(
+      // document.getElementById( "buttonDiv" ),
+      this.googleBtn.nativeElement,
+      { theme: "outline", size: "large" } // customization attributes
+    );
+  };
+
+  handleCredentialResponse( response: any ) {
+    console.log( "Encoded JWT ID token: " + response.credential );
+  };
 
   login() {
     
