@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -18,7 +18,6 @@ export class LoginComponent implements AfterViewInit {
   @ViewChild( 'googleBtn' ) googleBtn!: ElementRef;
 
   public formSubmitted = false;
-  public auth2: any;
 
   /**
   * @description Define un formulario reactivo para el inicio de sesión utilizando `FormBuilder`.
@@ -49,11 +48,13 @@ export class LoginComponent implements AfterViewInit {
   * y sus validaciones de manera más sencilla.
   * @param usuarioService { UsuarioService } - Servicio para manejar las operaciones 
   * relacionadas con los usuarios, como la creación de nuevos usuarios.
+  * @param ngZone { NgZone } - Servicio utilizado para mantener la interfaz de usuario actualizada.
   */
   constructor( 
     private fb: FormBuilder,
     private router: Router, 
     private usuarioService: UsuarioService,
+    private ngZone: NgZone,
   ){}
 
   /**
@@ -69,18 +70,23 @@ export class LoginComponent implements AfterViewInit {
   * @description Este método inicializa la autenticación con Google. Configura el cliente de autenticación de Google
   * utilizando el `client_id` y establece el callback para manejar la respuesta de credenciales.
   * También renderiza el botón de inicio de sesión de Google en el elemento especificado.
+  * @see https://developers.google.com/identity/sign-in/web/sign-in
   */
-  googleInit() {
-    google.accounts.id.initialize({
-      client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
-      callback: ( response: any ) => this.handleCredentialResponse( response ),
-    });
-
-    google.accounts.id.renderButton(
-      // document.getElementById( "buttonDiv" ),
-      this.googleBtn.nativeElement,
-      { theme: "outline", size: "large" } // customization attributes
-    );
+  googleInit(): void {
+    if ( typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.initialize({
+        client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
+        callback: ( response: any ) => this.handleCredentialResponse( response ),
+      });
+  
+      google.accounts.id.renderButton(
+        // document.getElementById( "buttonDiv" ),
+        this.googleBtn.nativeElement,
+        { theme: "outline", size: "large" } // customization attributes
+      );
+    } else {
+      console.error( 'La biblioteca de Google no se cargó correctamente.' );
+    };
   };
 
   /**
@@ -96,7 +102,9 @@ export class LoginComponent implements AfterViewInit {
       /**
       * Navegar al Dashboard
       */
-      this.router.navigateByUrl( '/' );
+      this.ngZone.run(() => {
+        this.router.navigateByUrl( '/' );
+      });
     });
   };
 

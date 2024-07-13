@@ -1,11 +1,14 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { tap, map, catchError } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { LoginForm } from '../interfaces/login-form.interface';
-import { tap, map, catchError } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+
+declare const google: any;
 
 const base_url = environment.base_url;
 
@@ -14,13 +17,101 @@ const base_url = environment.base_url;
 })
 export class UsuarioService {
 
+  private googleInitialized: boolean = false;
+
   /**
   * @name constructor
   * @description Inicializa el servicio inyectando una instancia de HttpClient, 
   * que se utiliza para realizar solicitudes HTTP.
   * @param { HttpClient } http - El cliente HTTP de Angular utilizado para enviar solicitudes HTTP al servidor.
+  * @param { Router } router - El router de Angular utilizado para manejar la navegación entre rutas.
+  * @param { NgZone } ngZone - El NgZone de Angular utilizado para mantener la interfaz de usuario actualizada.
   */
-  constructor( private http: HttpClient ) { }
+  constructor( 
+    private http: HttpClient, 
+    private router: Router,
+    private ngZone: NgZone,
+  ) { 
+    this.initGoogle();
+  }
+
+  /**
+   * @name initGoogle
+   * @description Este método inicializa la biblioteca de autenticación de Google si está disponible. 
+   * Configura el cliente de autenticación de Google con el `client_id` especificado. 
+   * Si la biblioteca de Google no está cargada, registra un error en la consola.
+   * @private
+   * @returns { void } - No retorna ningún valor.
+   */
+  private initGoogle(): void {
+
+    if ( typeof google !== 'undefined' && google.accounts && google.accounts.id ) {
+      google.accounts.id.initialize({
+        client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
+      });
+
+      this.googleInitialized = true;
+    } else {
+      console.error( 'Biblioteca de Google no cargada' );
+    };
+  };
+
+  /**
+  * @name ensureGoogleInitialized
+  * @description Este método garantiza que la biblioteca de autenticación de Google esté completamente inicializada
+  * antes de realizar cualquier operación que dependa de ella. Retorna una promesa que se resuelve cuando la inicialización
+  * está completa.
+  * @private
+  * @returns { Promise<void> } Una promesa que se resuelve cuando la biblioteca de Google está inicializada.
+  * @example
+  * this.ensureGoogleInitialized().then(() => {
+  *   // Realiza operaciones dependientes de Google aquí
+  * });
+  */
+  private ensureGoogleInitialized(): Promise<void> {
+
+    return new Promise<void>(( resolve ) => {
+      if ( this.googleInitialized ) {
+        resolve();
+      } else {
+        const interval = setInterval(() => {
+          if ( this.googleInitialized ) {
+            clearInterval( interval );
+            resolve();
+          }
+        }, 100);
+      };
+    });
+  };
+
+  /**
+   * @name logout
+   * @description Este método se encarga de eliminar el token almacenado en el localStorage.
+   * Luego, redirecciona al usuario al inicio de sesión.
+   * @returns { void } - No retorna ningún valor.
+   */
+  logout(): void {
+
+    this.ensureGoogleInitialized().then(() => {
+      const email = localStorage.getItem( 'email' ) || '';
+
+      if ( email ) {
+        google.accounts.id.revoke( email, () => {
+          this.ngZone.run(() => {
+            this.router.navigateByUrl( '/login' );
+          });
+          localStorage.removeItem( 'token' );
+          localStorage.removeItem( 'email' );
+        });
+      } else {
+        console.warn( 'No se encontró ningún email en localStorage. Es posible que el usuario no esté autenticado en Google.' );
+        this.ngZone.run(() => {
+          this.router.navigateByUrl('/login');
+        });
+        localStorage.removeItem('token');
+      };
+    });
+  };
 
   /**
   * @name validarToken
