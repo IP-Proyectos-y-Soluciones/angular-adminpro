@@ -17,7 +17,7 @@ const base_url = environment.base_url;
 })
 export class UsuarioService {
 
-  private googleInitialized: boolean = false;
+  public googleInitialized: boolean = false;
 
   /**
   * @name constructor
@@ -40,20 +40,23 @@ export class UsuarioService {
    * @description Este método inicializa la biblioteca de autenticación de Google si está disponible. 
    * Configura el cliente de autenticación de Google con el `client_id` especificado. 
    * Si la biblioteca de Google no está cargada, registra un error en la consola.
-   * @private
-   * @returns { void } - No retorna ningún valor.
+   * @returns { Promise<void> } Una promesa que se resuelve cuando la biblioteca de Google está inicializada.
    */
-  private initGoogle(): void {
+  initGoogle(): Promise<void> {
 
-    if ( typeof google !== 'undefined' && google.accounts && google.accounts.id ) {
-      google.accounts.id.initialize({
-        client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
-      });
+    return new Promise( resolve => {
+      if ( typeof google !== 'undefined' && google.accounts && google.accounts.id ) {
+        google.accounts.id.initialize({
+          client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
+        });
+  
+        this.googleInitialized = true;
+        resolve();
+      } else {
+        console.error( 'Biblioteca de Google no cargada' );
+      };
+    });
 
-      this.googleInitialized = true;
-    } else {
-      console.error( 'Biblioteca de Google no cargada' );
-    };
   };
 
   /**
@@ -61,14 +64,13 @@ export class UsuarioService {
   * @description Este método garantiza que la biblioteca de autenticación de Google esté completamente inicializada
   * antes de realizar cualquier operación que dependa de ella. Retorna una promesa que se resuelve cuando la inicialización
   * está completa.
-  * @private
   * @returns { Promise<void> } Una promesa que se resuelve cuando la biblioteca de Google está inicializada.
   * @example
   * this.ensureGoogleInitialized().then(() => {
   *   // Realiza operaciones dependientes de Google aquí
   * });
   */
-  private ensureGoogleInitialized(): Promise<void> {
+  ensureGoogleInitialized(): Promise<void> {
 
     return new Promise<void>(( resolve ) => {
       if ( this.googleInitialized ) {

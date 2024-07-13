@@ -72,12 +72,10 @@ export class LoginComponent implements AfterViewInit {
   * También renderiza el botón de inicio de sesión de Google en el elemento especificado.
   * @see https://developers.google.com/identity/sign-in/web/sign-in
   */
-  googleInit(): void {
+  async googleInit() {
     if ( typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-      google.accounts.id.initialize({
-        client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
-        callback: ( response: any ) => this.handleCredentialResponse( response ),
-      });
+
+      await this.usuarioService.initGoogle();
   
       google.accounts.id.renderButton(
         // document.getElementById( "buttonDiv" ),
@@ -98,7 +96,7 @@ export class LoginComponent implements AfterViewInit {
   handleCredentialResponse( response: any ) {
     // console.log( "Encoded JWT ID token: " + response.credential );
     this.usuarioService.loginGoogle( response.credential ).subscribe( resp => {
-      // console.log({ login: resp });
+      console.log({ login: resp });
       /**
       * Navegar al Dashboard
       */
