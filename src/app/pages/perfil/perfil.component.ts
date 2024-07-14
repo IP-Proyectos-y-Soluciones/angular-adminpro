@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 import { UsuarioService } from '../../services/usuario.service';
+import { FileUploadService } from '../../services/file-upload.service';
+
 import { Usuario } from '../../models/usuario.model';
 
 @Component({
@@ -14,6 +16,7 @@ export class PerfilComponent implements OnInit {
 
   public perfilForm!: FormGroup;
   public usuario: Usuario;
+  public imagenSubir: File = null as any;
 
   /**
   * @constructor
@@ -23,7 +26,8 @@ export class PerfilComponent implements OnInit {
   */
   constructor(
     private fb: FormBuilder, 
-    private usuarioService: UsuarioService,
+    private usuarioService: UsuarioService, 
+    private fileUploadService: FileUploadService,
   ) { 
     this.usuario = this.usuarioService.usuario;
   }
@@ -88,5 +92,34 @@ export class PerfilComponent implements OnInit {
         });
       }
     );
+  };
+
+  cambiarImagen( event: Event ) {
+
+    const input = event.target as HTMLInputElement;
+
+    if ( input.files && input.files.length > 0 ) {
+      this.imagenSubir = input.files[0];
+      console.log( this.imagenSubir );
+    } else {
+      console.log( 'No se seleccionó ningún archivo.' );
+    };
+  };
+
+  subirImagen() {
+
+    if ( !this.usuario.uid ) {
+      console.error("El ID de usuario no está definido.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El ID de usuario no está definido.'
+      });
+      return;
+    }
+
+    this.fileUploadService
+      .actualizarFoto( this.imagenSubir, 'usuarios', this.usuario.uid )
+      .then( img => console.log( img ) );
   };
 }
