@@ -73,18 +73,18 @@ export class LoginComponent implements AfterViewInit {
   * @see https://developers.google.com/identity/sign-in/web/sign-in
   */
   async googleInit() {
-    if ( typeof google !== 'undefined' && google.accounts && google.accounts.id) {
 
-      await this.usuarioService.initGoogle();
-  
-      google.accounts.id.renderButton(
-        // document.getElementById( "buttonDiv" ),
-        this.googleBtn.nativeElement,
-        { theme: "outline", size: "large" } // customization attributes
-      );
-    } else {
-      console.error( 'La biblioteca de Google no se cargó correctamente.' );
-    };
+    google.accounts.id.initialize({
+      callback: ( response: any ) => this.handleCredentialResponse( response ),
+    });
+
+    await this.usuarioService.initGoogle();
+
+    google.accounts.id.renderButton(
+      // document.getElementById( "buttonDiv" ),
+      this.googleBtn.nativeElement,
+      { theme: "outline", size: "large" } // customization attributes
+    );
   };
 
   /**
@@ -96,7 +96,7 @@ export class LoginComponent implements AfterViewInit {
   handleCredentialResponse( response: any ) {
     // console.log( "Encoded JWT ID token: " + response.credential );
     this.usuarioService.loginGoogle( response.credential ).subscribe( resp => {
-      console.log({ login: resp });
+      // console.log({ login: resp });
       /**
       * Navegar al Dashboard
       */

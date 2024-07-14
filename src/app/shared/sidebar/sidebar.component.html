@@ -13,9 +13,12 @@
             href="#"
             aria-expanded="false"
           >
-            <img src="./assets/images/users/profile.png" alt="user" />
+            <img 
+              [src]="usuario.imagenUrl" 
+              [alt]="usuario.name" 
+            />
             <span class="hide-menu">
-              Steave Jobs
+              {{ usuario.name }}
             </span>
           </a>
           <ul aria-expanded="false" class="collapse">

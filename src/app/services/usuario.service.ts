@@ -47,16 +47,12 @@ export class UsuarioService {
   initGoogle(): Promise<void> {
 
     return new Promise( resolve => {
-      if ( typeof google !== 'undefined' && google.accounts && google.accounts.id ) {
-        google.accounts.id.initialize({
-          client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
-        });
-  
-        this.googleInitialized = true;
-        resolve();
-      } else {
-        console.error( 'Biblioteca de Google no cargada' );
-      };
+      google.accounts.id.initialize({
+        client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
+      });
+
+      this.googleInitialized = true;
+      resolve();
     });
 
   };
@@ -105,7 +101,6 @@ export class UsuarioService {
             this.router.navigateByUrl( '/login' );
           });
           localStorage.removeItem( 'token' );
-          localStorage.removeItem( 'email' );
         });
       } else {
         console.warn( 'No se encontró ningún email en localStorage. Es posible que el usuario no esté autenticado en Google.' );
@@ -139,7 +134,6 @@ export class UsuarioService {
         const { name, email, img, google, role, uid, } = resp.usuario;
 
         this.usuario = new Usuario( name, email, '', img, google, role, uid, );
-        
         localStorage.setItem( 'token', resp.token );
       }),
       map(( resp: any )  => true ),
