@@ -128,15 +128,16 @@ export class UsuarioService {
         'x-token': token 
       }
     }).pipe(
-      tap(( resp: any ) => {
+      map(( resp: any ) => {
         // console.log( resp );
 
-        const { name, email, img, google, role, uid, } = resp.usuario;
+        const { name, email, img = '', google, role, uid, } = resp.usuario;
 
         this.usuario = new Usuario( name, email, '', img, google, role, uid, );
         localStorage.setItem( 'token', resp.token );
+
+        return true;
       }),
-      map(( resp: any )  => true ),
       catchError( error => of( false ))
     );
   };
