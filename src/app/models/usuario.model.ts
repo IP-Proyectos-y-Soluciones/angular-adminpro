@@ -11,7 +11,7 @@ export class Usuario{
    * @param { String } password - La contraseña del usuario (opcional).
    * @param { String } img La URL de la imagen del usuario (opcional).
    * @param { String } google - Indica si el usuario se registró mediante Google (opcional).
-   * @param { String } role - El rol del usuario dentro de la aplicación (opcional).
+   * @param { String } role - El rol del usuario dentro de la aplicación.
    * @param { String } uid - El identificador único del usuario (opcional).
    */
   constructor (
@@ -20,7 +20,7 @@ export class Usuario{
     public password?: string,
     public img?: string,
     public google?: boolean,
-    public role?: string,
+    public role: string = 'USER_ROLE',
     public uid?: string,
   ){};
 

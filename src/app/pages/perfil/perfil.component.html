@@ -5,7 +5,11 @@
       <div class="card-body">
         <h4 class="card-title">Perfil de Usuario</h4>
         <h6 class="card-subtitle">Ajustes</h6>
-        <form class="form p-t-20">
+        <form 
+          class="form p-t-20"
+          [formGroup]="perfilForm"
+          (submit)="actualizarPerfil()"
+        >
           <div class="form-group">
             <label for="exampleInputuname">User Name</label>
             <div class="input-group">
@@ -14,7 +18,8 @@
                 type="text"
                 class="form-control"
                 id="exampleInputuname"
-                placeholder="Username"
+                placeholder="Nombre de Usuario"
+                formControlName="name"
               />
             </div>
           </div>
@@ -26,7 +31,8 @@
                 type="email"
                 class="form-control"
                 id="exampleInputEmail1"
-                placeholder="Enter email"
+                placeholder="Email"
+                formControlName="email"
               />
             </div>
           </div>
@@ -34,6 +40,7 @@
           <button
             type="submit"
             class="btn btn-success btn-block waves-effect waves-light m-r-10"
+            [disabled]="perfilForm.invalid"
           >
             <i class="fa fa-save"></i>
             Guardar Cambios

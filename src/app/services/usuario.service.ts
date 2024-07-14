@@ -22,7 +22,7 @@ export class UsuarioService {
   public usuario!: Usuario;
 
   /**
-  * @name constructor
+  * @constructor
   * @description Inicializa el servicio inyectando una instancia de HttpClient, 
   * que se utiliza para realizar solicitudes HTTP.
   * @param { HttpClient } http - El cliente HTTP de Angular utilizado para enviar solicitudes HTTP al servidor.
@@ -36,6 +36,25 @@ export class UsuarioService {
   ) { 
     this.initGoogle();
   }
+
+  /**
+  * @name token
+  * @description Este getter obtiene el token de autenticación almacenado en el localStorage.
+  * Si no hay un token en el localStorage, retorna una cadena vacía.
+  * @returns { string } - El token de autenticación del usuario.
+  */
+  get token(): string {
+    return localStorage.getItem( 'token' ) || '';
+  };
+
+  /**
+  * @name uid
+  * @description Devuelve el identificador único (UID) del usuario actual. Si el UID no está definido, retorna una cadena vacía.
+  * @returns { string } El UID del usuario o una cadena vacía si no está definido.
+  */
+  get uid(): string {
+    return this.usuario.uid || '';
+  };
 
   /**
    * @name initGoogle
@@ -121,11 +140,10 @@ export class UsuarioService {
   * @returns { Observable<boolean> } Un Observable que emite `true` si el token es válido y `false` en caso de error.
   */
   validarToken(): Observable<boolean> {
-    const token = localStorage.getItem( 'token' ) || '';
 
     return this.http.get( `${ base_url }/login/renew`, {
       headers: { 
-        'x-token': token 
+        'x-token': this.token 
       }
     }).pipe(
       map(( resp: any ) => {
@@ -150,7 +168,7 @@ export class UsuarioService {
   * contraseña, confirmación de contraseña y aceptación de términos.
   * @returns { Observable<any> } - Retorna un observable que se puede suscribir para manejar la respuesta del servidor.
   */
-  crearUsuario( formData: RegisterForm ) {
+  crearUsuario( formData: RegisterForm ): Observable<any> {
     return this.http.post( `${ base_url }/usuarios`, formData )
       .pipe( 
         tap(( resp: any ) => {
@@ -161,6 +179,32 @@ export class UsuarioService {
   };
 
   /**
+  * @name actualizarPerfil
+  * @description Este método envía una solicitud HTTP PUT para actualizar el perfil del usuario en el servidor.
+  * Toma un objeto que contiene el correo electrónico y el nombre del usuario, y lo envía al endpoint correspondiente
+  * de la API para actualizar los datos del usuario.
+  * @param { Object } data - Un objeto que contiene las propiedades `email` y `name` del usuario.
+  * @param { string } data.email - El correo electrónico del usuario.
+  * @param { string } data.name - El nombre del usuario.
+  * @param { string } data.role - El rol del usuario. Puede ser 'ADMIN_ROLE' o 'USER_ROLE'.
+  * @returns { Observable<any> } - Retorna un observable que se puede suscribir para manejar la respuesta del servidor.
+  * El observable emite la respuesta de la solicitud HTTP.
+  */
+  actualizarPerfil( data: { email: string, name: string, role: string } ): Observable<Object> {
+
+    data = {
+      ...data,
+      role: this.usuario.role || 'USER_ROLE',
+    };
+
+    return this.http.put( `${ base_url }/usuarios/${ this.uid }`, data, {
+      headers: { 
+        'x-token': this.token 
+      }
+    });
+  };
+
+  /**
   * @name login
   * @description Este método envía una solicitud POST al servidor para autenticar a un usuario.
   * Utiliza los datos del formulario de inicio de sesión (`LoginForm`) y envía estos datos al endpoint `/login`.
@@ -168,7 +212,7 @@ export class UsuarioService {
   * el correo electrónico, la contraseña y el indicador de recordar al usuario.
   * @returns { Observable<any> } - Retorna un observable que emite la respuesta del servidor.
   */
-  login( formData: LoginForm ) {
+  login( formData: LoginForm ): Observable<any> {
     return this.http.post( `${ base_url }/login`, formData )
       .pipe( 
         tap(( resp: any ) => {
@@ -184,7 +228,7 @@ export class UsuarioService {
   * Utiliza el token de inicio de sesión de Google y envía este token al endpoint `/login/google`.
   * @param { string } token - El token de inicio de sesión de Google.
   */
-  loginGoogle( token: string ) {
+  loginGoogle( token: string ): Observable<any> {
     return this.http.post( `${ base_url }/login/google`, { token } )
       .pipe( 
         tap(( resp: any ) => {
