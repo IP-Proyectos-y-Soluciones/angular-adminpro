@@ -17,6 +17,7 @@ export class PerfilComponent implements OnInit {
   public perfilForm!: FormGroup;
   public usuario: Usuario;
   public imagenSubir: File = null as any;
+  public imgTemp: string | null = null;
 
   /**
   * @constructor
@@ -100,10 +101,26 @@ export class PerfilComponent implements OnInit {
 
     if ( input.files && input.files.length > 0 ) {
       this.imagenSubir = input.files[0];
-      console.log( this.imagenSubir );
+      // console.log( this.imagenSubir );
+
+      if ( !input.files ) {
+        return this.imgTemp = null;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL( this.imagenSubir );
+
+      reader.onloadend = () => {
+        this.imgTemp = reader.result as string
+        // console.log( reader.result );
+      };
     } else {
       console.log( 'No se seleccionó ningún archivo.' );
     };
+
+
+
+
   };
 
   subirImagen() {
@@ -120,6 +137,8 @@ export class PerfilComponent implements OnInit {
 
     this.fileUploadService
       .actualizarFoto( this.imagenSubir, 'usuarios', this.usuario.uid )
-      .then( img => console.log( img ) );
+      .then( img => {
+        this.usuario.img = img;
+      });
   };
 }
