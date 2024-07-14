@@ -7,6 +7,7 @@ import { Observable, of } from 'rxjs';
 
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { LoginForm } from '../interfaces/login-form.interface';
+import { Usuario } from '../models/usuario.model';
 
 declare const google: any;
 
@@ -18,6 +19,7 @@ const base_url = environment.base_url;
 export class UsuarioService {
 
   public googleInitialized: boolean = false;
+  public usuario!: Usuario;
 
   /**
   * @name constructor
@@ -132,8 +134,13 @@ export class UsuarioService {
       }
     }).pipe(
       tap(( resp: any ) => {
-        localStorage.setItem( 'token', resp.token );
         // console.log( resp );
+
+        const { name, email, img, google, role, uid, } = resp.usuario;
+
+        this.usuario = new Usuario( name, email, '', img, google, role, uid, );
+        
+        localStorage.setItem( 'token', resp.token );
       }),
       map(( resp: any )  => true ),
       catchError( error => of( false ))
