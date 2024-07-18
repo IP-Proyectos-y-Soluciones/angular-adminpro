@@ -76,25 +76,22 @@ export class PerfilComponent implements OnInit {
         /**
          * Mostrar alerta de éxito
          */
-        Swal.fire({
-          icon: 'success',
-          title: 'Perfil actualizado',
-          text: 'La información del perfil ha sido actualizada correctamente.'
-        });
-      },
-      error => {
+        Swal.fire( 'Guardado', 'La información del perfil ha sido actualizada correctamente.', 'success' );
+      }, ( err ) => {
         /**
          * Mostrar alerta de error
          */
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al actualizar perfil',
-          text: error.error.msg || 'Ocurrió un error al actualizar el perfil.'
-        });
+        Swal.fire( 'Error', err.error.msg, 'error' );
       }
     );
   };
 
+  /**
+   * @name camabiarImagen
+   * @description Este método se encarga de manejar el evento de cambio de un input de tipo archivo, permitiendo al usuario seleccionar una imagen. Si se selecciona un archivo, se actualiza la propiedad `imagenSubir` con el archivo seleccionado y se genera una vista previa en base64 de la imagen, asignándola a la propiedad `imgTemp`. Si no se selecciona ningún archivo, se asegura de que `imgTemp` se establezca en null.
+   * @param event - El evento disparado al cambiar el input de tipo archivo.
+   * @returns { void }
+   */
   cambiarImagen( event: Event ) {
 
     const input = event.target as HTMLInputElement;
@@ -117,28 +114,29 @@ export class PerfilComponent implements OnInit {
     } else {
       console.log( 'No se seleccionó ningún archivo.' );
     };
-
-
-
-
   };
 
-  subirImagen() {
+  /**
+   * @name subirImagen
+   * @description Este método se encarga de subir la imagen seleccionada al servidor. Primero, verifica si el ID de usuario (`uid`) está definido. Si no lo está, muestra un mensaje de error mediante SweetAlert y termina la ejecución. Si el `uid` está definido, llama al servicio `fileUploadService` para subir la imagen. Una vez subida la imagen, actualiza la propiedad `img` del usuario con el nombre de la imagen devuelto por el servidor.
+   * @returns { void }
+   */
+  subirImagen(): void {
 
     if ( !this.usuario.uid ) {
-      console.error("El ID de usuario no está definido.");
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'El ID de usuario no está definido.'
-      });
+      console.error( 'El ID de usuario no está definido.' );
+      Swal.fire( 'Error', 'El ID de usuario no está definido.', 'error' );
       return;
-    }
+    };
 
     this.fileUploadService
       .actualizarFoto( this.imagenSubir, 'usuarios', this.usuario.uid )
       .then( img => {
         this.usuario.img = img;
+        Swal.fire( 'Guardado', 'Imagen de usuario actualizada', 'success' );
+      }).catch( err => {
+        console.log( err );
+        Swal.fire( 'Error', 'No se pudo subir la imagen', 'error' );
       });
   };
 }
