@@ -7,6 +7,8 @@ import { Observable, of } from 'rxjs';
 
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { LoginForm } from '../interfaces/login-form.interface';
+import { CargarUsuario } from '../interfaces/cargar-usuario.interface';
+
 import { Usuario } from '../models/usuario.model';
 
 declare const google: any;
@@ -54,6 +56,19 @@ export class UsuarioService {
   */
   get uid(): string {
     return this.usuario.uid || '';
+  };
+
+  /**
+   * @name headers
+   * @description Este método devuelve un objeto con los encabezados HTTP que incluyen un token de autenticación (`x-token`). Este token se utiliza para autenticar las solicitudes HTTP al servidor. El método accede a la propiedad `token` del servicio para obtener el valor del token actual.
+   * @returns { object } - Un objeto que contiene los encabezados HTTP necesarios para la autenticación.
+   */
+  get headers(): object {
+    return {
+      headers: {
+        'x-token': this.token
+      }
+    };
   };
 
   /**
@@ -236,5 +251,16 @@ export class UsuarioService {
           localStorage.setItem( 'token', resp.token );
         })
       );
+  };
+
+  /**
+   * @name cargarUsuarios
+   * @description Este método se encarga de cargar una lista de usuarios desde el servidor, empezando desde un índice especificado. Realiza una solicitud HTTP GET al endpoint correspondiente, utilizando los headers de autenticación. Devuelve un observable que emite los datos de los usuarios obtenidos del servidor. 
+   * @param { number } from - El índice desde el cual comenzar a cargar los usuarios. Valor por defecto es 0. 
+   * @returns { Observable<CargarUsuario> } - Un observable que emite la respuesta del servidor, la cual incluye los datos de los usuarios. 
+   */
+  cargarUsuarios( from: number = 0 ): Observable<CargarUsuario> {
+    const url = `${ base_url }/usuarios/?from=${ from }`;
+    return this.http.get<CargarUsuario>( url, this.headers );
   };
 }
