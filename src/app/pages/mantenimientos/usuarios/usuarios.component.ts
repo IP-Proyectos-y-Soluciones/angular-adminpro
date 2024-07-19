@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { UsuarioService } from '../../../services/usuario.service';
+import { BusquedasService } from '../../../services/busquedas.service';
 import { Usuario } from '../../../models/usuario.model';
 
 @Component({
@@ -21,7 +22,8 @@ export class UsuariosComponent implements OnInit {
    * @param { UsuarioService } usuarioService - Servicio para manejar las operaciones relacionadas con el usuario.
    */
   constructor(
-    private usuarioService: UsuarioService,
+    private usuarioService: UsuarioService, 
+    private busquedasService: BusquedasService, 
   ) {}
 
   /**
@@ -64,5 +66,17 @@ export class UsuariosComponent implements OnInit {
     };
 
     this.cargarUsuarios();
+  };
+
+  /**
+   * @name buscar
+   * @description Este método se utiliza para buscar usuarios en la lista de usuarios. Llama al servicio `BusquedasService` para realizar la búsqueda en el backend utilizando el término proporcionado y almacena el resultado en la propiedad `usuarios`. Esto permite filtrar la lista de usuarios según el término de búsqueda.
+   * @param { string } termino - Cadena de texto que se utiliza para buscar usuarios.
+   */
+  buscar( termino: string ): void {
+    this.busquedasService.buscar( 'usuarios', termino )
+      .subscribe( resultados => {
+        this.usuarios = resultados;
+      });
   };
 }
