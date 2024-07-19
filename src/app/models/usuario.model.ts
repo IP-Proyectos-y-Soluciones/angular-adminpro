@@ -10,7 +10,7 @@ export class Usuario{
    * @param { String } email - El correo electrónico del usuario.
    * @param { String } password - La contraseña del usuario (opcional).
    * @param { String } img La URL de la imagen del usuario (opcional).
-   * @param { String } google - Indica si el usuario se registró mediante Google (opcional).
+   * @param { boolean } google - Indica si el usuario se registró mediante Google (opcional).
    * @param { String } role - El rol del usuario dentro de la aplicación.
    * @param { String } uid - El identificador único del usuario (opcional).
    */
