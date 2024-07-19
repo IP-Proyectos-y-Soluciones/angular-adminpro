@@ -13,6 +13,7 @@ export class UsuariosComponent implements OnInit {
   public totalUsuarios: number = 0;
   public usuarios: Usuario[] = [];
   public from: number = 0;
+  public cargando: boolean = true;
 
   /**
    * @constructor
@@ -38,10 +39,13 @@ export class UsuariosComponent implements OnInit {
    * @returns { void } - Actualiza la lista de usuarios y el número total de usuarios. 20 usuarios se cargan por página. 30 usuarios son mostrados por página en la vista.
    */
   cargarUsuarios(): void {
+    this.cargando = true;
+
     this.usuarioService.cargarUsuarios( this.from )
       .subscribe( ({ total, usuarios }) => {
         this.totalUsuarios = total;
         this.usuarios = usuarios;
+        this.cargando = false;
       });
   };
 
