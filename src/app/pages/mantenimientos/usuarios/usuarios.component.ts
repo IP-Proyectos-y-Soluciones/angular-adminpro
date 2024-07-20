@@ -97,7 +97,12 @@ export class UsuariosComponent implements OnInit {
    * @param { Usuario } usuario - Usuario que se desea eliminar.
    * @returns { void } - Elimina el usuario de la lista de usuarios y muestra una alerta con el resultado de la eliminación.
    */
-  eliminarUsuario( usuario: Usuario ): void {
+  eliminarUsuario( usuario: Usuario ) {
+
+    if ( usuario.uid === this.usuarioService.uid ) {
+      return Swal.fire( 'Error', 'No puede borrarse a si mismo', 'error' );
+    };
+
     Swal.fire({
       title: "¿Borrar usuario?",
       text: `Esta a punto de borrar a ${ usuario.name }`,
