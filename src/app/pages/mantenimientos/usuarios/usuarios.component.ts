@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import Swal from 'sweetalert2';
 
 import { UsuarioService } from '../../../services/usuario.service';
 import { BusquedasService } from '../../../services/busquedas.service';
 import { Usuario } from '../../../models/usuario.model';
+
 
 @Component({
   selector: 'app-usuarios',
@@ -87,5 +89,35 @@ export class UsuariosComponent implements OnInit {
       .subscribe( resultados => {
         this.usuarios = resultados;
       });
+  };
+
+  /**
+   * @name eliminarUsuario
+   * @description Este método se utiliza para eliminar un usuario de la lista de usuarios. Solicita confirmación al usuario antes de proceder con la eliminación. Si el usuario confirma, llama al método `usuarioService.eliminarUsuario` para eliminar el usuario del backend y actualiza la lista de usuarios mostrada.
+   * @param { Usuario } usuario - Usuario que se desea eliminar.
+   * @returns { void } - Elimina el usuario de la lista de usuarios y muestra una alerta con el resultado de la eliminación.
+   */
+  eliminarUsuario( usuario: Usuario ): void {
+    Swal.fire({
+      title: "¿Borrar usuario?",
+      text: `Esta a punto de borrar a ${ usuario.name }`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Si, borrarlo"
+    }).then((result) => {
+      if (result.value) {
+        this.usuarioService.elimianrUsuario( usuario )
+          .subscribe( resp => {
+
+            this.cargarUsuarios();
+            Swal.fire(
+              'Usuario borrado', 
+              `${ usuario.name } fue elimindo correctamente`, 
+              'success'
+            );
+
+          });
+      };
+    });
   };
 }

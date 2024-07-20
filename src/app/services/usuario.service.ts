@@ -276,4 +276,15 @@ export class UsuarioService {
         })
       );
   };
+
+  /**
+   * @name eliminarUsuario
+   * @description Este método se encarga de eliminar un usuario del sistema. Realiza una solicitud HTTP DELETE al endpoint correspondiente, utilizando los headers de autenticación. Devuelve un observable que se puede suscribir para manejar la respuesta del servidor.
+   * @param { Usuario } usuario - El usuario que se desea eliminar.
+   * @returns { Observable<any> } - Un observable que emite la respuesta del servidor.
+   */
+  elimianrUsuario( usuario: Usuario ): Observable<any> {
+    const url = `${ base_url }/usuarios/${ usuario.uid }`;
+    return this.http.delete( url, this.headers );
+  };
 }
