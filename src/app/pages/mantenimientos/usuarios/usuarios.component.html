@@ -27,7 +27,7 @@
       <i class="fa fa-spin fa-refresh fa-2x"></i>
       <p class="mb-0">Por favor espere</p>
     </div>
-    
+
   </div>
 </div>
 
@@ -83,9 +83,11 @@
           </table>
         </div>
 
-        <button (click)="cambiarPagina(-5)" class="btn btn-secondary">Anteriores</button>
-        &nbsp;
-        <button (click)="cambiarPagina(5)" class="btn btn-secondary">Siguientes</button>
+        <div *ngIf="txtTermino.value.length === 0">
+          <button (click)="cambiarPagina(-5)" class="btn btn-secondary">Anteriores</button>
+          &nbsp;
+          <button (click)="cambiarPagina(5)" class="btn btn-secondary">Siguientes</button>
+        </div>
       </div>
     </div>
   </div>

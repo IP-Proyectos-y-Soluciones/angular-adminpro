@@ -13,6 +13,8 @@ export class UsuariosComponent implements OnInit {
 
   public totalUsuarios: number = 0;
   public usuarios: Usuario[] = [];
+  public usuariosTemp: Usuario[] = [];
+
   public from: number = 0;
   public cargando: boolean = true;
 
@@ -47,6 +49,7 @@ export class UsuariosComponent implements OnInit {
       .subscribe( ({ total, usuarios }) => {
         this.totalUsuarios = total;
         this.usuarios = usuarios;
+        this.usuariosTemp = usuarios;
         this.cargando = false;
       });
   };
@@ -72,8 +75,14 @@ export class UsuariosComponent implements OnInit {
    * @name buscar
    * @description Este método se utiliza para buscar usuarios en la lista de usuarios. Llama al servicio `BusquedasService` para realizar la búsqueda en el backend utilizando el término proporcionado y almacena el resultado en la propiedad `usuarios`. Esto permite filtrar la lista de usuarios según el término de búsqueda.
    * @param { string } termino - Cadena de texto que se utiliza para buscar usuarios.
+   * @returns { Usuario[] | undefined } - Retorna la lista de usuarios filtrada según el término de búsqueda.
    */
-  buscar( termino: string ): void {
+  buscar( termino: string ): Usuario[] | undefined {
+
+    if ( termino.length === 0 ) {
+      return this.usuarios = this.usuariosTemp;
+    };
+
     this.busquedasService.buscar( 'usuarios', termino )
       .subscribe( resultados => {
         this.usuarios = resultados;
