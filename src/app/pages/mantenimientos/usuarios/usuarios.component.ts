@@ -125,4 +125,17 @@ export class UsuariosComponent implements OnInit {
       };
     });
   };
+
+  /**
+   * @name cambiarRole
+   * @description Este método se utiliza para cambiar el rol de un usuario. Llama al método `usuarioService.guardarUsuario` para actualizar el rol del usuario en el backend.
+   * @param { Usuario } usuario - Usuario que se desea cambiar el rol.
+   * @returns { void } - Actualiza el rol del usuario en el backend y muestra un mensaje de éxito.
+   */
+  cambiarRole( usuario: Usuario ): void {
+    this.usuarioService.guardarUsuario( usuario )
+      .subscribe( resp => {
+        console.log( resp );
+      });
+  };
 }

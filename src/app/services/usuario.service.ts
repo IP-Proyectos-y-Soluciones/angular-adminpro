@@ -209,14 +209,10 @@ export class UsuarioService {
 
     data = {
       ...data,
-      role: this.usuario.role || 'USER_ROLE',
+      role: this.usuario.role,
     };
 
-    return this.http.put( `${ base_url }/usuarios/${ this.uid }`, data, {
-      headers: { 
-        'x-token': this.token 
-      }
-    });
+    return this.http.put( `${ base_url }/usuarios/${ this.uid }`, data, this.headers );
   };
 
   /**
@@ -286,5 +282,15 @@ export class UsuarioService {
   elimianrUsuario( usuario: Usuario ): Observable<any> {
     const url = `${ base_url }/usuarios/${ usuario.uid }`;
     return this.http.delete( url, this.headers );
+  };
+
+  /**
+   * @name guardarUsuario
+   * @description Este método se encarga de actualizar los datos de un usuario en el sistema. Realiza una solicitud HTTP PUT al endpoint correspondiente, utilizando los headers de autenticación. Devuelve un observable que se puede suscribir para manejar la respuesta del servidor.
+   * @param { Usuario } usuario - El usuario cuyos datos se desean actualizar.
+   * @returns { Observable<Object> } - Un observable que emite la respuesta del servidor.
+   */
+  guardarUsuario( usuario: Usuario ): Observable<Object> {
+    return this.http.put( `${ base_url }/usuarios/${ usuario.uid }`, usuario, this.headers );
   };
 }
