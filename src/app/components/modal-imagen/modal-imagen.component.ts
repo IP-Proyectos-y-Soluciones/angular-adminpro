@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import Swal from 'sweetalert2';
 
 import { ModalImagenService } from '../../services/modal-imagen.service';
+import { FileUploadService } from '../../services/file-upload.service';
 
 @Component({
   selector: 'app-modal-imagen',
@@ -13,7 +15,8 @@ export class ModalImagenComponent {
   public imgTemp: string | null = null;
 
   constructor(
-    public modalImagenService: ModalImagenService,  
+    public modalImagenService: ModalImagenService, 
+    public fileUploadService: FileUploadService,
   ) { }
 
   /**
@@ -54,6 +57,36 @@ export class ModalImagenComponent {
     } else {
       console.log( 'No se seleccionó ningún archivo.' );
     };
+  };
+
+  /**
+   * @name subirImagen
+   * @description Este método se encarga de subir la imagen seleccionada al servidor. Primero, verifica si el ID de usuario (`uid`) está definido. Si no lo está, muestra un mensaje de error mediante SweetAlert y termina la ejecución. Si el `uid` está definido, llama al servicio `fileUploadService` para subir la imagen. Una vez subida la imagen, actualiza la propiedad `img` del usuario con el nombre de la imagen devuelto por el servidor.
+   * @returns { void }
+   */
+  subirImagen(): void {
+
+    const id = this.modalImagenService.id;
+    const tipo = this.modalImagenService.tipo;
+
+    if ( !id ) {
+      console.error( 'El ID de usuario no está definido.' );
+      Swal.fire( 'Error', 'El ID de usuario no está definido.', 'error' );
+      return;
+    };
+
+    this.fileUploadService
+      .actualizarFoto( this.imagenSubir, tipo, id )
+      .then( img => {
+        Swal.fire( 'Guardado', 'Imagen de usuario actualizada', 'success' );
+
+        this.modalImagenService.nuevaImagen.emit( img );
+
+        this.cerrarModal();
+      }).catch( err => {
+        console.log( err );
+        Swal.fire( 'Error', 'No se pudo subir la imagen', 'error' );
+      });
   };
 
 }
