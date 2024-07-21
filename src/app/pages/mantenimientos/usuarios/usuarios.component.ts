@@ -143,8 +143,17 @@ export class UsuariosComponent implements OnInit {
       });
   };
 
-  abrirModal( usuario: Usuario ) {
+  /**
+   * @name abrirModal
+   * @description Este método se utiliza para abrir el modal de edición de imagen del usuario. Llama al método `modalImagenService.abrirModal` para mostrar el modal de edición de imagen y pasarle los datos del usuario.
+   * @param { Usuario } usuario - Usuario que se desea editar la imagen.
+   */
+  abrirModal( usuario: Usuario ): void {
     console.log( usuario );
-    this.modalImagenService.abrirModal();
+    
+    const img = usuario.img ? usuario.img : 'no-img';
+    const uid = usuario.uid ? usuario.uid : 'no-uid';
+
+    this.modalImagenService.abrirModal( 'usuarios', uid, img );
   };
 }

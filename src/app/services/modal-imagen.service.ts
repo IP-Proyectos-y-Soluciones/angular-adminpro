@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
+
+const base_url = environment.base_url;
 
 @Injectable({
   providedIn: 'root'
@@ -6,6 +9,9 @@ import { Injectable } from '@angular/core';
 export class ModalImagenService {
 
   private _ocultarModal: boolean = true;
+  public tipo:string = '';
+  public id: string = '';
+  public img: string = '';
 
   /**
    * @name ocultarModal
@@ -19,10 +25,25 @@ export class ModalImagenService {
   /**
    * @name abrirModal
    * @description Este método se utiliza para mostrar el modal.
+   * @param { string } tipo - El tipo de usuario al que se abre el modal ('usuario', 'medicos', 'hospitales').
+   * @param { string } id - El ID del usuario, médico o hospital al que se abre el modal.
+   * @param { string } img - La URL de la imagen del usuario, médico o hospital al que se abre el modal (opcional).
    * @returns { void } - Cambia el estado del modal a visible.
    */
-  abrirModal(): void {
+  abrirModal( 
+    tipo: 'usuarios'|'medicos'|'hospitales', 
+    id: string, 
+    img: string = 'no-img', 
+  ): void {
     this._ocultarModal = false;
+    this.tipo = tipo;
+    this.id = id;
+
+    if ( img.includes( 'https' ) ) {
+      this.img = img;
+    } else {
+      this.img = `${ base_url }/upload/${ tipo }/${ img }`;
+    };
   };
 
   /**
