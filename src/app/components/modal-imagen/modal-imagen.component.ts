@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 
+import { ModalImagenService } from '../../services/modal-imagen.service';
+
 @Component({
   selector: 'app-modal-imagen',
   templateUrl: './modal-imagen.component.html',
@@ -7,15 +9,17 @@ import { Component } from '@angular/core';
 })
 export class ModalImagenComponent {
 
-  public ocultarModal: boolean = false;
+  constructor(
+    public modalImagenService: ModalImagenService,  
+  ) { }
 
   /**
    * @name cerrarModal
-   * @description Este método se ejecuta cuando se desea cerrar el modal.
-   * @returns { void } - Cierra el modal y elimina la clase que lo oculta.
+   * @description Este método se utiliza para cerrar el modal.
+   * @returns { void } - Cierra el modal y cambia el estado de ocultar el modal a true.
    */
   cerrarModal(): void {
-    this.ocultarModal = true;
+    this.modalImagenService.cerrarModal();
   };
 
 }
