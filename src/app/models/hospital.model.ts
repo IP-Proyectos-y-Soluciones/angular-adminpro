@@ -15,13 +15,13 @@ export class Hospital {
 
   /**
    * @description Constructor de la clase Hospital que inicializa una instancia del hospital con sus propiedades correspondientes.
-   * @param { string } nombre - El nombre del hospital.
+   * @param { string } name - El nombre del hospital.
    * @param { string } [ _id ] - El ID del hospital (opcional).
    * @param { string } [ img ] - La URL de la imagen del hospital (opcional).
    * @param { _HospitalUser } [ usuario ] - El usuario asociado con el hospital (opcional).
    */
   constructor(
-    public nombre: string,
+    public name: string,
     public _id?: string,
     public img?: string,
     public usuario?: _HospitalUser,
