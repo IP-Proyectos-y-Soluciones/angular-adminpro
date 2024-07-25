@@ -3,9 +3,11 @@ import { Subscription } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
+import { Hospital } from '../../../models/hospital.model';
+
+import { BusquedasService } from '../../../services/busquedas.service';
 import { HospitalService } from '../../../services/hospital.service';
 import { ModalImagenService } from '../../../services/modal-imagen.service';
-import { Hospital } from '../../../models/hospital.model';
 
 @Component({
   selector: 'app-hospitales',
@@ -20,7 +22,8 @@ export class HospitalesComponent implements OnInit, OnDestroy {
 
   constructor(
     private hospitalService: HospitalService, 
-    private modalImagenService: ModalImagenService,
+    private modalImagenService: ModalImagenService, 
+    private busquedasService: BusquedasService, 
   ) { }
 
   /**
@@ -48,6 +51,26 @@ export class HospitalesComponent implements OnInit, OnDestroy {
       )
       .subscribe( img => {
         this.cargarHospitales(); 
+      });
+  };
+
+  /**
+   * @name buscar
+   * @description Este método realiza una búsqueda de hospitales basado en el término proporcionado. 
+   * Si el término de búsqueda es una cadena vacía, se carga la lista completa de hospitales llamando al método `cargarHospitales`. 
+   * Si se proporciona un término de búsqueda, se hace una solicitud a `busquedasService` para buscar hospitales que coincidan con el término. 
+   * Los resultados de la búsqueda se suscriben y se asignan a la propiedad `hospitales` del componente.
+   * @param { string } termino - El término de búsqueda utilizado para filtrar los hospitales. 
+   * @returns { void } - Este método no devuelve ningún valor.
+   */
+  buscar( termino: string ): void {
+    if ( termino.length === 0 ) {
+      return this.cargarHospitales();
+    };
+
+    this.busquedasService.buscar( 'hospitales', termino )
+      .subscribe( ( resultados: Hospital[] ) => {
+        this.hospitales = resultados;
       });
   };
 
@@ -120,7 +143,7 @@ export class HospitalesComponent implements OnInit, OnDestroy {
    * @returns { Promise<void> } - Este método no devuelve ningún valor, pero retorna una Promesa que resuelve cuando se completa la acción.
    */
   async abrirSweetAlert(): Promise<void> {
-    const { value } = await Swal.fire<string>({
+    const { value = '' } = await Swal.fire<string>({
       title: "Agregar Hospital",
       text: "Ingrese el nombre del hospital",
       icon: "info",
@@ -136,7 +159,7 @@ export class HospitalesComponent implements OnInit, OnDestroy {
           this.hospitales.push( resp.hospital );
         });
     } else {
-      Swal.fire( 'Error', 'El nombre del hospital no puede estar vacío', 'error' );
+      // Swal.fire( 'Error', 'El nombre del hospital no puede estar vacío', 'error' );
     };
   };
 

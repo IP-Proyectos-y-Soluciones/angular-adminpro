@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 import { Usuario } from '../models/usuario.model';
+import { Hospital } from '../models/hospital.model';
 
 const base_url = environment.base_url;
 
@@ -53,11 +54,25 @@ export class BusquedasService {
    * @param { any[] } resultados - Array de objetos que representan los datos de los usuarios obtenidos del servidor.
    * @returns { Usuario[] } - Retorna un array de instancias de la clase `Usuario`.
    */
-  private transformarUsuarios( resultados: any[] ): Usuario[] {
+  private transformarUsuarios( resultados: Usuario[] ): Usuario[] {
 
     return resultados.map(
       user => new Usuario( user.name, user.email, '', user.img, user.google, user.role, user.uid )
     );
+  };
+
+  /**
+   * @name transformarHospitales
+   * @description Este método transforma un array de resultados genéricos (`any[]`) en un array de objetos `Hospital`. 
+   * El propósito de este método es mapear o convertir los datos obtenidos del servidor al formato del modelo `Hospital`. 
+   * Actualmente, simplemente devuelve los resultados sin realizar ninguna transformación. 
+   * Se espera que este método sea modificado para mapear los datos de acuerdo con la estructura del modelo `Hospital`.
+   * @param { any[] } resultados - Un array de resultados genéricos obtenidos de una fuente externa, como una API. 
+   * @returns { Hospital[] } - Un array de objetos `Hospital` que representa los datos transformados.
+   */
+  private transformarHospitales( resultados: Hospital[] ): Hospital[] {
+
+    return resultados;
   };
 
   /**
@@ -76,6 +91,9 @@ export class BusquedasService {
           switch ( tipo ) {
             case 'usuarios':
               return this.transformarUsuarios( resp.resultados );
+            
+            case 'hospitales':
+              return this.transformarHospitales( resp.resultados );
           
             default:
               return [];
