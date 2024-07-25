@@ -49,4 +49,38 @@ export class HospitalService {
         map( resp  => resp.hospitales )
       );
   };
+
+  /**
+   * @name crearHospital
+   * @description Este método envía una solicitud POST al servidor para crear un nuevo hospital con el nombre proporcionado. La solicitud incluye un token de autenticación en los encabezados para asegurar que el usuario esté autenticado.
+   * @param { string } name - El nombre del nuevo hospital que se desea crear.
+   * @returns { Observable<any> } - Un observable que emite la respuesta del servidor. Esta respuesta puede incluir los detalles del hospital creado o un mensaje de confirmación de la operación.
+   */
+  crearHospital( name: string ): Observable<any> {
+    const url = `${ base_url }/hospitales`;
+    return this.http.post( url, { name }, { headers: this.headers } );
+  };
+
+  /**
+   * @name actualizarHospital
+   * @description Este método envía una solicitud PUT al servidor para actualizar el nombre de un hospital existente. La solicitud incluye un token de autenticación en los encabezados para asegurar que el usuario esté autenticado.
+   * @param { string } _id - El identificador único del hospital que se desea actualizar.
+   * @param { string } name - El nuevo nombre del hospital.
+   * @returns { Observable<any> } - Un observable que emite la respuesta del servidor. Esta respuesta puede incluir un mensaje de confirmación de la operación.
+   */
+  actualizarHospital( _id: string, name: string ): Observable<any> {
+    const url = `${ base_url }/hospitales/${ _id }`;
+    return this.http.put( url, { name }, { headers: this.headers } );
+  };
+
+  /**
+   * @name borrarHospital
+   * @description Este método envía una solicitud DELETE al servidor para eliminar un hospital existente. La solicitud incluye un token de autenticación en los encabezados para asegurar que el usuario esté autenticado.
+   * @param { string } _id - El identificador único del hospital que se desea eliminar.
+   * @returns { Observable<any> } - Un observable que emite la respuesta del servidor. Esta respuesta puede incluir un mensaje de confirmación de la operación.
+   */
+  borrarHospital( _id: string ): Observable<any> {
+    const url = `${ base_url }/hospitales/${ _id }`;
+    return this.http.delete( url, { headers: this.headers } );
+  };
 }
