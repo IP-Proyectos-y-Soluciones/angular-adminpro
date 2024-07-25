@@ -42,12 +42,15 @@
             <h6 class="card-subtitle">
               Hospitales registrados en la aplicación
             </h6>
-            
+
           </div>
           <div class="col-4">
             <div class="text-right">
 
-              <button class="btn btn-primary">
+              <button 
+                class="btn btn-primary" 
+                (click)="abrirSweetAlert()"
+              >
                 <i class="fa fa-hospital-o"></i>
                 Crear Hospital
               </button>
@@ -62,7 +65,7 @@
               <tr>
                 <th class="w100">Foto</th>
                 <th>Nombre</th>
-                <th class="text-nowrap">Acciones</th>
+                <th class="text-nowrap w100">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -72,6 +75,7 @@
                     [src]="hospital.img ? (hospital.img | imagen: 'hospitales') : ''" 
                     [alt]="hospital.name"
                     class="avatar cursor"
+                    (click)="abrirModal( hospital )"
                   >
                 </td>
                 <td>
@@ -84,10 +88,20 @@
                 </td>
 
                 <td class="text-nowrap text-center">
-                  <a href="#" data-toggle="tooltip" data-original-title="Guardar Cambios">
+                  <a 
+                    (click)="guardarCambios( hospital )" 
+                    data-toggle="tooltip" 
+                    class="cursor"
+                    data-original-title="Guardar Cambios"
+                  >
                     <i class="fa fa-save text-inverse m-r-10"></i>
                   </a>
-                  <a href="#" data-toggle="tooltip" data-original-title="Borrar">
+                  <a 
+                    (click)="eliminarHospital( hospital )" 
+                    data-toggle="tooltip" 
+                    class="cursor"
+                    data-original-title="Borrar"
+                  >
                     <i class="fa fa-close text-danger"></i>
                   </a>
                 </td>
