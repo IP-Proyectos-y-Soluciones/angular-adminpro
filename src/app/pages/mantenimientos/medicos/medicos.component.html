@@ -12,7 +12,10 @@
   </div>
 </div>
 
-<div class="row animated fadeIn fast">
+<div 
+  class="row animated fadeIn fast" 
+  *ngIf="cargando"
+>
   <div class="col-12">
     <div class="alert alert-info text-center" role="alert">
       <h4 class="alert-heading">Cargando...</h4>
@@ -22,7 +25,10 @@
   </div>
 </div>
 
-<div class="row">
+<div 
+  class="row" 
+  *ngIf="!cargando"
+>
   <div class="col-12">
     <div class="card">
       <div class="card-body">
@@ -40,9 +46,16 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Lunar probe project</td>
-                <td>Lunar probe project</td>
+              <tr *ngFor="let medico of medicos">
+                <td class="text-center">
+                  <img 
+                    [src]="medico.img ? (medico.img | imagen: 'medicos') : ''"
+                    [alt]="medico.name" 
+                    class="cursor avatar"
+                    (click)="abrirModal( medico )"
+                  >
+                </td>
+                <td>{{ medico.name }}</td>
 
                 <td class="text-nowrap text-center">
                   <a href="#" data-toggle="tooltip" data-original-title="Editar">
