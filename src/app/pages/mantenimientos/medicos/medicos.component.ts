@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
+import { delay } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 import { Medico } from '../../../models/medico.model';
 
+import { BusquedasService } from '../../../services/busquedas.service';
 import { MedicoService } from '../../../services/medico.service';
 import { ModalImagenService } from '../../../services/modal-imagen.service';
 
@@ -12,10 +15,11 @@ import { ModalImagenService } from '../../../services/modal-imagen.service';
   templateUrl: './medicos.component.html',
   styles: ``
 })
-export class MedicosComponent implements OnInit {
+export class MedicosComponent implements OnInit, OnDestroy {
 
   public cargando: boolean = true;
   public medicos: Medico[] = [];
+  private imgSubs: Subscription = new Subscription();
 
   /**
    * @constructor
@@ -25,20 +29,40 @@ export class MedicosComponent implements OnInit {
    * en los métodos del componente.
    * @param { MedicoService } medicoService - Servicio encargado de las operaciones relacionadas con los médicos, como obtener, crear, actualizar y eliminar médicos.
    * @param { ModalImagenService } modalImagenService - Servicio encargado de la gestión de imágenes en los modales, permitiendo abrir y manipular modales de imagen.
+   * @param { BusquedasService } busquedasService - Servicio encargado de la búsqueda de médicos por nombre.
    */
   constructor(
     private medicoService: MedicoService, 
     private modalImagenService: ModalImagenService, 
+    private busquedasService: BusquedasService, 
   ) { }
+  
+  /**
+   * @name ngOnDestroy
+   * @description Este método se ejecuta cuando el componente se destruye. Es parte del ciclo de vida de un componente de Angular.
+   * Utiliza este método para realizar una limpieza adecuada y liberar recursos. En este caso, se llama al método `unsubscribe` 
+   * del objeto `imgSubs` para cancelar cualquier suscripción activa y evitar fugas de memoria.
+   * @returns { void } - Este método no devuelve ningún valor.
+   */
+  ngOnDestroy (): void {
+    this.imgSubs.unsubscribe();
+  };
 
   /**
    * @name ngOnInit
    * @description Este método es parte del ciclo de vida del componente en Angular. Se ejecuta una vez que Angular ha inicializado todas las propiedades de entrada del componente. 
    * En este caso, se utiliza para cargar la lista de médicos llamando al método `cargarMedicos`.
+   * Además, se suscribe a un observable `nuevaImagen` del servicio `modalImagenService` para recargar la lista de médicos cuando se recibe una nueva imagen, con un retraso de 100 ms.
    * @returns { void } - Este método no devuelve ningún valor.
    */
   ngOnInit (): void {
     this.cargarMedicos();
+
+    this.imgSubs = this.imgSubs = this.modalImagenService.nuevaImagen
+      .pipe( delay( 100 ) )
+      .subscribe( img => {
+      this.cargarMedicos(); 
+    });
   };
 
   /**
@@ -55,6 +79,26 @@ export class MedicosComponent implements OnInit {
      .subscribe( medicos => {
         this.cargando = false;
         this.medicos = medicos;
+      });
+  };
+
+  /**
+   * @name buscar
+   * @description Este método se utiliza para buscar médicos por nombre utilizando el servicio `BusquedasService`. 
+   * Si el término de búsqueda está vacío, se llama al método `cargarMedicos` para cargar todos los médicos. 
+   * De lo contrario, se utiliza el servicio `BusquedasService` para realizar la búsqueda y actualizar la lista de médicos 
+   * con los resultados obtenidos.
+   * @param { string } termino - El término de búsqueda utilizado para encontrar médicos.
+   * @returns { void } - Este método no devuelve ningún valor.
+   */
+  buscar( termino: string ): void {
+    if ( termino.length === 0 ) {
+      return this.cargarMedicos();
+    };
+
+    this.busquedasService.buscar( 'medicos', termino )
+      .subscribe( ( resultados: Medico[] ) => {
+        this.medicos = resultados;
       });
   };
 
