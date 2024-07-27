@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+
+import { Hospital } from '../../../models/hospital.model';
+import { Medico } from '../../../models/medico.model';
 
 import { HospitalService } from '../../../services/hospital.service';
-import { Hospital } from '../../../models/hospital.model';
+import { MedicoService } from '../../../services/medico.service';
 
 @Component({
   selector: 'app-medico',
@@ -13,6 +18,8 @@ export class MedicoComponent implements OnInit {
 
   public medicoForm!: FormGroup;
   public hospitales: Hospital[] = [];
+
+  public medicoSeleccionado?: Medico;
   public hospitalSeleccionado?: Hospital;
 
   /**
@@ -25,6 +32,8 @@ export class MedicoComponent implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private hospitalService: HospitalService, 
+    private medicoService: MedicoService, 
+    private router: Router,
   ) { }
 
   /**
@@ -38,7 +47,7 @@ export class MedicoComponent implements OnInit {
   ngOnInit (): void {
     this.medicoForm = this.fb.group({
       name: [ 
-        'Carlos Sanchez', 
+        '', 
         Validators.required, 
       ],
       hospital: [
@@ -70,8 +79,22 @@ export class MedicoComponent implements OnInit {
       });
   };
 
-  guardarMedico() {
-    console.log( this.medicoForm.value );
+  /**
+   * @name guardarMedico
+   * @description Este método se encarga de guardar el médico en el backend utilizando el servicio `medicoService`.
+   * La respuesta del servicio se suscribe para obtener un objeto `Medico`. Una vez que los datos son recibidos, 
+   * se muestra un mensaje de éxito utilizando `Swal` y se navega a la página de detalle del médico utilizando el método `router.navigateByUrl`.
+   * Este método es útil para crear un nuevo médico en el backend y mostrar un mensaje de éxito al usuario.
+   * @returns { void } - Este método no devuelve ningún valor.
+   */
+  guardarMedico(): void {
+    const { name } = this.medicoForm.value;
+    this.medicoService.crearMedico( this.medicoForm.value )
+      .subscribe( ( resp: any ) => {
+        console.log( resp );
+        Swal.fire( 'Creado', `${ name } creado correctamente`, 'success' );
+        this.router.navigateByUrl( `/dashboard/medico/${ resp.Medico._id }` );
+      });
   };
 
 }

@@ -66,10 +66,10 @@ export class MedicoService {
    * @description Este método realiza una solicitud HTTP POST al servidor para crear un nuevo médico. 
    * La URL de la solicitud se construye utilizando una variable base de la URL (`base_url`). 
    * La solicitud incluye encabezados de autenticación y envía los datos del médico en el cuerpo de la solicitud.
-   * @param { Medico } medico - El objeto `Medico` que contiene los datos del nuevo médico que se va a crear.
+   * @param { { name: string, hospital: string } } medico - El objeto `Medico` que contiene los datos del nuevo médico que se va a crear.
    * @returns { Observable<Object> } - Un observable que emite la respuesta del servidor, la cual contiene la información del médico creado.
    */
-  crearMedico( medico: Medico ): Observable<Object> {
+  crearMedico( medico: { name: string, hospital: string } ): Observable<Object> {
     const url = `${ base_url }/medicos`;
     return this.http.post( url, medico, { headers: this.headers } );
   };

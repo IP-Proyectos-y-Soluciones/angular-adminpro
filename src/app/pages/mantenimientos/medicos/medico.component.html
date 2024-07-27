@@ -16,7 +16,7 @@
           (submit)="guardarMedico()"
         >
 
-          <div class="form-group row">
+          <div class="form-group row" *ngIf="medicoSeleccionado">
             <label for="foto" class="col-sm-3 control-label"
               >Foto</label
             >
@@ -24,8 +24,8 @@
               <div class="input-group">
                 <img
                   class="img-avatar"
-                  src="http://localhost:3000/api/upload/medicos/no-image"
-                  alt=""
+                  [src]="medicoSeleccionado.img | imagen: 'medicos'"
+                  [alt]="medicoSeleccionado.name"
                 >
               </div>
             </div>
