@@ -29,6 +29,10 @@ export class MedicoComponent implements OnInit {
    * `FormBuilder` es un servicio proporcionado por Angular que facilita la creación y gestión de formularios reactivos.
    * En este caso, el `FormBuilder` se utiliza para generar el formulario de médicos.
    * @param { FormBuilder } fb - Servicio `FormBuilder` para generar el formulario de médicos.
+   * @param { HospitalService } hospitalService - Servicio para manejar las operaciones relacionadas con los hospitales.
+   * @param { MedicoService } medicoService - Servicio para manejar las operaciones relacionadas con los médicos.
+   * @param { Router } router - Servicio `Router` para manejar la navegación entre rutas.
+   * @param { ActivatedRoute } activatedRoute - Servicio `ActivatedRoute` para obtener los parámetros de la ruta activa.
    */
   constructor(
     private fb: FormBuilder, 
