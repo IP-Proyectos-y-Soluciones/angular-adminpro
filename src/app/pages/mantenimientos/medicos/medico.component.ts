@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { Hospital } from '../../../models/hospital.model';
@@ -33,7 +33,8 @@ export class MedicoComponent implements OnInit {
     private fb: FormBuilder, 
     private hospitalService: HospitalService, 
     private medicoService: MedicoService, 
-    private router: Router,
+    private router: Router, 
+    private activatedRoute: ActivatedRoute, 
   ) { }
 
   /**
@@ -45,6 +46,9 @@ export class MedicoComponent implements OnInit {
    * @returns { void } - Este método no devuelve ningún valor.
    */
   ngOnInit (): void {
+
+    this.activatedRoute.params.subscribe( ({ id }) => this.cargarMedico( id ) );
+
     this.medicoForm = this.fb.group({
       name: [ 
         '', 
@@ -61,6 +65,14 @@ export class MedicoComponent implements OnInit {
     this.medicoForm.get( 'hospital' )?.valueChanges
       .subscribe( hospitalId => {
         this.hospitalSeleccionado = this.hospitales.find( hospital => hospital._id === hospitalId );
+      });
+  };
+
+  cargarMedico( id: string ) {
+    this.medicoService.obtenerMedicoPorId( id )
+      .subscribe( medico => {
+        console.log( medico );
+        this.medicoSeleccionado = medico;
       });
   };
 

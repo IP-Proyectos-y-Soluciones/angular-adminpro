@@ -62,6 +62,22 @@ export class MedicoService {
   };
 
   /**
+   * @name obtenerMedicoPorId
+   * @description Este método realiza una solicitud HTTP GET al servidor para obtener la información de un médico específico utilizando su ID. 
+   * La URL de la solicitud se construye utilizando una variable base de la URL (`base_url`) y el ID del médico. 
+   * La solicitud incluye encabezados de autenticación. El método devuelve un observable que emite la información del médico obtenida del servidor.
+   * @param { string } id - El ID del médico cuya información se desea obtener.
+   * @returns { Observable<Medico> } - Un observable que emite la información del médico obtenida del servidor.
+   */
+  obtenerMedicoPorId( id: string ): Observable<Medico> {
+    const url = `${ base_url }/medicos/${ id }`;
+    return this.http.get<{ ok: boolean, medico: Medico }>( url, { headers: this.headers } )
+      .pipe(
+        map( resp  => resp.medico )
+      );
+  };
+
+  /**
    * @name crearMedico
    * @description Este método realiza una solicitud HTTP POST al servidor para crear un nuevo médico. 
    * La URL de la solicitud se construye utilizando una variable base de la URL (`base_url`). 
