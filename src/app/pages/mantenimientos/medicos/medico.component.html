@@ -89,20 +89,23 @@
     </div>
   </div>
 
-  <div class="col-md-6">
+  <div 
+    class="col-md-6 animated fadeIn fast" 
+    *ngIf="hospitalSeleccionado"
+  >
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">
           Hospital
         </h4>
         <h6 class="card-subtitle">
-          Hospital Asignado
+          {{ hospitalSeleccionado.name }}
         </h6>
 
         <img
-          class="img-avatar"
-          src="http://localhost:3000/api/upload/medicos/no-image"
-          alt=""
+          class="img-thumbnail"
+          [src]="hospitalSeleccionado.img | imagen: 'hospitales'"
+          [alt]="hospitalSeleccionado.name"
         >
       </div>
     </div>
