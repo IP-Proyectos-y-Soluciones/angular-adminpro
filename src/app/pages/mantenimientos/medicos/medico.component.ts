@@ -8,6 +8,7 @@ import { Medico } from '../../../models/medico.model';
 
 import { HospitalService } from '../../../services/hospital.service';
 import { MedicoService } from '../../../services/medico.service';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-medico',
@@ -68,12 +69,39 @@ export class MedicoComponent implements OnInit {
       });
   };
 
-  cargarMedico( id: string ) {
-    this.medicoService.obtenerMedicoPorId( id )
-      .subscribe( medico => {
-        console.log( medico );
-        this.medicoSeleccionado = medico;
-      });
+  /**
+   * @name cargarMedico
+   * @description Este método realiza la carga de los datos de un médico específico desde el servidor utilizando su ID. 
+   * Primero verifica si el ID es igual a 'nuevo' y si es así, simplemente retorna. Luego, valida si el ID tiene el formato correcto de un ObjectId de MongoDB. 
+   * Si el ID es válido, utiliza el servicio `medicoService` para obtener la información del médico mediante una solicitud HTTP GET. 
+   * Cuando se recibe la respuesta, si el médico tiene un hospital asociado, se desestructura el nombre del médico y el ID del hospital del objeto médico recibido. 
+   * Luego, estos valores se asignan a las propiedades correspondientes del componente y del formulario reactivo. 
+   * Si el médico no tiene un hospital definido, imprime un mensaje en la consola. 
+   * Si el ID no es válido, redirige al usuario a la página de listado de médicos.
+   * @param { string } id - El ID del médico cuyas datos se desea cargar.
+   * @returns { Promise<boolean> | undefined } - Retorna una promesa que puede resolver a un valor booleano o undefined si el ID es 'nuevo'.
+   */
+  cargarMedico( id: string ): Promise<boolean> | undefined {
+    if ( id === 'nuevo' ) {
+      return;
+    };
+
+    if ( id. match(/^[0-9a-fA-F]{24}$/) ) {
+      this.medicoService.obtenerMedicoPorId( id )
+        .pipe( delay( 100 ))
+        .subscribe( medico => {
+          if ( medico.hospital ) {
+            const { name, hospital: { _id } } = medico;
+            // console.log( name, _id );
+            this.medicoSeleccionado = medico;
+            this.medicoForm.setValue({ name, hospital: _id });
+          } else {
+            console.log( 'El hospital no está definido.' );
+          };
+        });
+    } else {
+      return this.router.navigateByUrl( '/dashboard/medicos' );
+    };
   };
 
   /**
@@ -100,13 +128,31 @@ export class MedicoComponent implements OnInit {
    * @returns { void } - Este método no devuelve ningún valor.
    */
   guardarMedico(): void {
+
     const { name } = this.medicoForm.value;
-    this.medicoService.crearMedico( this.medicoForm.value )
-      .subscribe( ( resp: any ) => {
-        console.log( resp );
-        Swal.fire( 'Creado', `${ name } creado correctamente`, 'success' );
-        this.router.navigateByUrl( `/dashboard/medico/${ resp.Medico._id }` );
-      });
+
+    if ( this.medicoSeleccionado ) {
+      // Actualizar
+      const data = {
+        ...this.medicoForm.value,
+        _id: this.medicoSeleccionado._id,
+      };
+
+      this.medicoService.actualizarMedico( data )
+        .subscribe( resp => {
+          console.log( resp );
+          Swal.fire( 'Actualizado', `${ name } actualizado correctamente`, 'success' );
+        });
+    } else {
+      // Crear
+      
+      this.medicoService.crearMedico( this.medicoForm.value )
+        .subscribe( ( resp: any ) => {
+          console.log( resp );
+          Swal.fire( 'Creado', `${ name } creado correctamente`, 'success' );
+          this.router.navigateByUrl( `/dashboard/medico/${ resp.Medico._id }` );
+        });
+    };
   };
 
 }
