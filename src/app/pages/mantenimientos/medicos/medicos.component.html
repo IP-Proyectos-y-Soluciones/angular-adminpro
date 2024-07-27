@@ -90,7 +90,12 @@
                   >
                     <i class="fa fa-pencil text-inverse m-r-10"></i>
                   </a>
-                  <a href="#" data-toggle="tooltip" data-original-title="Borrar">
+                  <a 
+                    class="cursor"
+                    data-toggle="tooltip" 
+                    data-original-title="Borrar" 
+                    (click)="borrarMedico( medico )"
+                  >
                     <i class="fa fa-close text-danger"></i>
                   </a>
                 </td>

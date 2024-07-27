@@ -119,4 +119,30 @@ export class MedicosComponent implements OnInit, OnDestroy {
       Swal.fire( 'Error', 'El medico no tiene ID definido', 'error' );
     };
   };
+
+  borrarMedico( medico: Medico ): void {
+    Swal.fire({
+      title: "¿Borrar médico?",
+      text: `Esta a punto de borrar a ${ medico.name }`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Si, borrarlo"
+    }).then(( result ) => {
+      if ( result.value && medico._id ) {
+        this.medicoService.borrarMedico( medico._id )
+          .subscribe( resp => {
+
+            this.cargarMedicos();
+            Swal.fire(
+              'Médico borrado', 
+              `${ medico.name } fue elimindo correctamente`, 
+              'success'
+            );
+
+          });
+      } else {
+        Swal.fire( 'Error', 'El medico no tiene ID definido', 'error' );
+      };
+    });
+  };
 }
