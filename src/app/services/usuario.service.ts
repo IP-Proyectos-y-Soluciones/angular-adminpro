@@ -16,44 +16,53 @@ declare const google: any;
 const base_url = environment.base_url;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UsuarioService {
-
   public googleInitialized: boolean = false;
   public usuario!: Usuario;
 
   /**
-  * @constructor
-  * @description Inicializa el servicio inyectando una instancia de HttpClient, 
-  * que se utiliza para realizar solicitudes HTTP.
-  * @param { HttpClient } http - El cliente HTTP de Angular utilizado para enviar solicitudes HTTP al servidor.
-  * @param { Router } router - El router de Angular utilizado para manejar la navegación entre rutas.
-  * @param { NgZone } ngZone - El NgZone de Angular utilizado para mantener la interfaz de usuario actualizada.
-  */
-  constructor( 
-    private http: HttpClient, 
+   * @constructor
+   * @description Inicializa el servicio inyectando una instancia de HttpClient,
+   * que se utiliza para realizar solicitudes HTTP.
+   * @param { HttpClient } http - El cliente HTTP de Angular utilizado para enviar solicitudes HTTP al servidor.
+   * @param { Router } router - El router de Angular utilizado para manejar la navegación entre rutas.
+   * @param { NgZone } ngZone - El NgZone de Angular utilizado para mantener la interfaz de usuario actualizada.
+   */
+  constructor(
+    private http: HttpClient,
     private router: Router,
-    private ngZone: NgZone,
-  ) { 
+    private ngZone: NgZone
+  ) {
     this.initGoogle();
   }
 
   /**
-  * @name token
-  * @description Este getter obtiene el token de autenticación almacenado en el localStorage.
-  * Si no hay un token en el localStorage, retorna una cadena vacía.
-  * @returns { string } - El token de autenticación del usuario.
-  */
+   * @name token
+   * @description Este getter obtiene el token de autenticación almacenado en el localStorage.
+   * Si no hay un token en el localStorage, retorna una cadena vacía.
+   * @returns { string } - El token de autenticación del usuario.
+   */
   get token(): string {
-    return localStorage.getItem( 'token' ) || '';
+    return localStorage.getItem('token') || '';
   };
 
   /**
-  * @name uid
-  * @description Devuelve el identificador único (UID) del usuario actual. Si el UID no está definido, retorna una cadena vacía.
-  * @returns { string } El UID del usuario o una cadena vacía si no está definido.
-  */
+   * @name role
+   * @description Este getter obtiene el rol del usuario actual. El rol puede ser 'ADMIN_ROLE' o 'USER_ROLE'. 
+   * El rol determina los permisos y accesos del usuario en la aplicación.
+   * @returns { 'ADMIN_ROLE' | 'USER_ROLE' } - El rol del usuario actual.
+   */
+  get role(): 'ADMIN_ROLE' | 'USER_ROLE' {
+    return this.usuario.role;
+  };
+
+  /**
+   * @name uid
+   * @description Devuelve el identificador único (UID) del usuario actual. Si el UID no está definido, retorna una cadena vacía.
+   * @returns { string } El UID del usuario o una cadena vacía si no está definido.
+   */
   get uid(): string {
     return this.usuario.uid || '';
   };
@@ -66,70 +75,68 @@ export class UsuarioService {
   get headers(): object {
     return {
       headers: {
-        'x-token': this.token
-      }
+        'x-token': this.token,
+      },
     };
   };
 
   /**
    * @name initGoogle
-   * @description Este método inicializa la biblioteca de autenticación de Google si está disponible. 
-   * Configura el cliente de autenticación de Google con el `client_id` especificado. 
+   * @description Este método inicializa la biblioteca de autenticación de Google si está disponible.
+   * Configura el cliente de autenticación de Google con el `client_id` especificado.
    * Si la biblioteca de Google no está cargada, registra un error en la consola.
    * @returns { Promise<void> } Una promesa que se resuelve cuando la biblioteca de Google está inicializada.
    */
   initGoogle(): Promise<void> {
-
-    return new Promise( resolve => {
+    return new Promise((resolve) => {
       google.accounts.id.initialize({
-        client_id: '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
+        client_id:
+          '466980792623-5mu7ehr41mj5vq5ng5hhbdql54p4popn.apps.googleusercontent.com',
       });
 
       this.googleInitialized = true;
       resolve();
     });
-
-  };
+  }
 
   /**
    * @name guardarLocalStorage
-   * @description Este método almacena un token de autenticación y un menú en el almacenamiento local del navegador (localStorage). 
+   * @description Este método almacena un token de autenticación y un menú en el almacenamiento local del navegador (localStorage).
    * Se utiliza para guardar el estado de autenticación y la configuración del menú del usuario de forma persistente en el navegador.
    * @param { string } token - El token de autenticación que se guardará en el localStorage.
    * @param { any } menu - El menú que se guardará en el localStorage. Puede ser un objeto que representa las opciones de navegación disponibles para el usuario.
    * @returns { void } - Este método no devuelve ningún valor.
    */
-  guardarLocalStorage( token: string, menu: any ): void {
-    localStorage.setItem( 'token', token );
-    localStorage.setItem( 'menu', JSON.stringify( menu ) );
-  };
+  guardarLocalStorage(token: string, menu: any): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('menu', JSON.stringify(menu));
+  }
 
   /**
-  * @name ensureGoogleInitialized
-  * @description Este método garantiza que la biblioteca de autenticación de Google esté completamente inicializada
-  * antes de realizar cualquier operación que dependa de ella. Retorna una promesa que se resuelve cuando la inicialización
-  * está completa.
-  * @returns { Promise<void> } Una promesa que se resuelve cuando la biblioteca de Google está inicializada.
-  * @example
-  * this.ensureGoogleInitialized().then(() => {
-  *   // Realiza operaciones dependientes de Google aquí
-  * });
-  */
+   * @name ensureGoogleInitialized
+   * @description Este método garantiza que la biblioteca de autenticación de Google esté completamente inicializada
+   * antes de realizar cualquier operación que dependa de ella. Retorna una promesa que se resuelve cuando la inicialización
+   * está completa.
+   * @returns { Promise<void> } Una promesa que se resuelve cuando la biblioteca de Google está inicializada.
+   * @example
+   * this.ensureGoogleInitialized().then(() => {
+   *   // Realiza operaciones dependientes de Google aquí
+   * });
+   */
   ensureGoogleInitialized(): Promise<void> {
-
-    return new Promise<void>(( resolve ) => {
-      if ( this.googleInitialized ) {
+    return new Promise<void>((resolve) => {
+      if (this.googleInitialized) {
         resolve();
       } else {
         const interval = setInterval(() => {
-          if ( this.googleInitialized ) {
-            clearInterval( interval );
+          if (this.googleInitialized) {
+            clearInterval(interval);
             resolve();
           }
         }, 100);
-      };
+      }
     });
-  };
+  }
 
   /**
    * @name logout
@@ -138,156 +145,168 @@ export class UsuarioService {
    * @returns { void } - No retorna ningún valor.
    */
   logout(): void {
-
     this.ensureGoogleInitialized().then(() => {
-      const email = localStorage.getItem( 'email' ) || '';
+      const email = localStorage.getItem('email') || '';
 
-      if ( email ) {
-        google.accounts.id.revoke( email, () => {
+      if (email) {
+        google.accounts.id.revoke(email, () => {
           this.ngZone.run(() => {
-            this.router.navigateByUrl( '/login' );
+            this.router.navigateByUrl('/login');
           });
-          localStorage.removeItem( 'token' );
-          localStorage.removeItem( 'menu' );
+          localStorage.removeItem('token');
+          localStorage.removeItem('menu');
         });
       } else {
-        console.warn( 'No se encontró ningún email en localStorage. Es posible que el usuario no esté autenticado en Google.' );
+        console.warn(
+          'No se encontró ningún email en localStorage. Es posible que el usuario no esté autenticado en Google.'
+        );
         this.ngZone.run(() => {
           this.router.navigateByUrl('/login');
         });
         localStorage.removeItem('token');
         localStorage.removeItem('menu');
-      };
-    });
-  };
-
-  /**
-  * @name validarToken
-  * @description Este método se encarga de validar el token almacenado en el localStorage 
-  * realizando una solicitud HTTP al servidor. Si el token es válido, se actualiza el token 
-  * en el localStorage y el método retorna un Observable que emite `true`. Si ocurre un error, 
-  * el Observable emite `false`.
-  * @returns { Observable<boolean> } Un Observable que emite `true` si el token es válido y `false` en caso de error.
-  */
-  validarToken(): Observable<boolean> {
-
-    return this.http.get( `${ base_url }/login/renew`, {
-      headers: { 
-        'x-token': this.token 
       }
-    }).pipe(
-      map(( resp: any ) => {
-        // console.log( resp );
-
-        const { name, email, img = '', google, role, uid, } = resp.usuario;
-
-        this.usuario = new Usuario( name, email, '', img, google, role, uid, );
-
-        this.guardarLocalStorage( resp.token, resp.menu );
-
-        return true;
-      }),
-      catchError( error => of( false ))
-    );
-  };
+    });
+  }
 
   /**
-  * @name crearUsuario
-  * @description Este método envía una solicitud HTTP POST para crear un nuevo usuario en el servidor.
-  * Toma los datos del formulario de registro y los envía al endpoint correspondiente de la API.
-  * @param { RegisterForm } formData - Los datos del formulario de registro que contienen el nombre, correo electrónico, 
-  * contraseña, confirmación de contraseña y aceptación de términos.
-  * @returns { Observable<any> } - Retorna un observable que se puede suscribir para manejar la respuesta del servidor.
-  */
-  crearUsuario( formData: RegisterForm ): Observable<any> {
-    return this.http.post( `${ base_url }/usuarios`, formData )
-      .pipe( 
-        tap(( resp: any ) => {
-          this.guardarLocalStorage( resp.token, resp.menu );
+   * @name validarToken
+   * @description Este método se encarga de validar el token almacenado en el localStorage
+   * realizando una solicitud HTTP al servidor. Si el token es válido, se actualiza el token
+   * en el localStorage y el método retorna un Observable que emite `true`. Si ocurre un error,
+   * el Observable emite `false`.
+   * @returns { Observable<boolean> } Un Observable que emite `true` si el token es válido y `false` en caso de error.
+   */
+  validarToken(): Observable<boolean> {
+    return this.http
+      .get(`${base_url}/login/renew`, {
+        headers: {
+          'x-token': this.token,
+        },
+      })
+      .pipe(
+        map((resp: any) => {
           // console.log( resp );
-        })
+
+          const { name, email, img = '', google, role, uid } = resp.usuario;
+
+          this.usuario = new Usuario(name, email, '', img, google, role, uid);
+
+          this.guardarLocalStorage(resp.token, resp.menu);
+
+          return true;
+        }),
+        catchError((error) => of(false))
       );
-  };
+  }
 
   /**
-  * @name actualizarPerfil
-  * @description Este método envía una solicitud HTTP PUT para actualizar el perfil del usuario en el servidor.
-  * Toma un objeto que contiene el correo electrónico y el nombre del usuario, y lo envía al endpoint correspondiente
-  * de la API para actualizar los datos del usuario.
-  * @param { Object } data - Un objeto que contiene las propiedades `email` y `name` del usuario.
-  * @param { string } data.email - El correo electrónico del usuario.
-  * @param { string } data.name - El nombre del usuario.
-  * @param { string } data.role - El rol del usuario. Puede ser 'ADMIN_ROLE' o 'USER_ROLE'.
-  * @returns { Observable<any> } - Retorna un observable que se puede suscribir para manejar la respuesta del servidor.
-  * El observable emite la respuesta de la solicitud HTTP.
-  */
-  actualizarPerfil( data: { email: string, name: string, role: string } ): Observable<Object> {
+   * @name crearUsuario
+   * @description Este método envía una solicitud HTTP POST para crear un nuevo usuario en el servidor.
+   * Toma los datos del formulario de registro y los envía al endpoint correspondiente de la API.
+   * @param { RegisterForm } formData - Los datos del formulario de registro que contienen el nombre, correo electrónico,
+   * contraseña, confirmación de contraseña y aceptación de términos.
+   * @returns { Observable<any> } - Retorna un observable que se puede suscribir para manejar la respuesta del servidor.
+   */
+  crearUsuario(formData: RegisterForm): Observable<any> {
+    return this.http.post(`${base_url}/usuarios`, formData).pipe(
+      tap((resp: any) => {
+        this.guardarLocalStorage(resp.token, resp.menu);
+        // console.log( resp );
+      })
+    );
+  }
 
+  /**
+   * @name actualizarPerfil
+   * @description Este método envía una solicitud HTTP PUT para actualizar el perfil del usuario en el servidor.
+   * Toma un objeto que contiene el correo electrónico y el nombre del usuario, y lo envía al endpoint correspondiente
+   * de la API para actualizar los datos del usuario.
+   * @param { Object } data - Un objeto que contiene las propiedades `email` y `name` del usuario.
+   * @param { string } data.email - El correo electrónico del usuario.
+   * @param { string } data.name - El nombre del usuario.
+   * @param { string } data.role - El rol del usuario. Puede ser 'ADMIN_ROLE' o 'USER_ROLE'.
+   * @returns { Observable<any> } - Retorna un observable que se puede suscribir para manejar la respuesta del servidor.
+   * El observable emite la respuesta de la solicitud HTTP.
+   */
+  actualizarPerfil(data: {
+    email: string;
+    name: string;
+    role: string;
+  }): Observable<Object> {
     data = {
       ...data,
       role: this.usuario.role,
     };
 
-    return this.http.put( `${ base_url }/usuarios/${ this.uid }`, data, this.headers );
-  };
+    return this.http.put(
+      `${base_url}/usuarios/${this.uid}`,
+      data,
+      this.headers
+    );
+  }
 
   /**
-  * @name login
-  * @description Este método envía una solicitud POST al servidor para autenticar a un usuario.
-  * Utiliza los datos del formulario de inicio de sesión (`LoginForm`) y envía estos datos al endpoint `/login`.
-  * @param { LoginForm } formData - Los datos del formulario de inicio de sesión que contienen 
-  * el correo electrónico, la contraseña y el indicador de recordar al usuario.
-  * @returns { Observable<any> } - Retorna un observable que emite la respuesta del servidor.
-  */
-  login( formData: LoginForm ): Observable<any> {
-    return this.http.post( `${ base_url }/login`, formData )
-      .pipe( 
-        tap(( resp: any ) => {
-          this.guardarLocalStorage( resp.token, resp.menu );
-          // console.log( resp );
-        })
-      );
-  };
+   * @name login
+   * @description Este método envía una solicitud POST al servidor para autenticar a un usuario.
+   * Utiliza los datos del formulario de inicio de sesión (`LoginForm`) y envía estos datos al endpoint `/login`.
+   * @param { LoginForm } formData - Los datos del formulario de inicio de sesión que contienen
+   * el correo electrónico, la contraseña y el indicador de recordar al usuario.
+   * @returns { Observable<any> } - Retorna un observable que emite la respuesta del servidor.
+   */
+  login(formData: LoginForm): Observable<any> {
+    return this.http.post(`${base_url}/login`, formData).pipe(
+      tap((resp: any) => {
+        this.guardarLocalStorage(resp.token, resp.menu);
+        // console.log( resp );
+      })
+    );
+  }
 
   /**
-  * @name loginGoogle
-  * @description Este método envía una solicitud POST al servidor para autenticar a un usuario utilizando Google.
-  * Utiliza el token de inicio de sesión de Google y envía este token al endpoint `/login/google`.
-  * @param { string } token - El token de inicio de sesión de Google.
-  */
-  loginGoogle( token: string ): Observable<any> {
-    return this.http.post( `${ base_url }/login/google`, { token } )
-      .pipe( 
-        tap(( resp: any ) => {
-          // console.log( resp );
-          this.guardarLocalStorage( resp.token, resp.menu );
-        })
-      );
-  };
+   * @name loginGoogle
+   * @description Este método envía una solicitud POST al servidor para autenticar a un usuario utilizando Google.
+   * Utiliza el token de inicio de sesión de Google y envía este token al endpoint `/login/google`.
+   * @param { string } token - El token de inicio de sesión de Google.
+   */
+  loginGoogle(token: string): Observable<any> {
+    return this.http.post(`${base_url}/login/google`, { token }).pipe(
+      tap((resp: any) => {
+        // console.log( resp );
+        this.guardarLocalStorage(resp.token, resp.menu);
+      })
+    );
+  }
 
   /**
    * @name cargarUsuarios
-   * @description Este método se encarga de cargar una lista de usuarios desde el servidor, empezando desde un índice especificado. Realiza una solicitud HTTP GET al endpoint correspondiente, utilizando los headers de autenticación. Devuelve un observable que emite los datos de los usuarios obtenidos del servidor. 
-   * @param { number } from - El índice desde el cual comenzar a cargar los usuarios. Valor por defecto es 0. 
-   * @returns { Observable<CargarUsuario> } - Un observable que emite la respuesta del servidor, la cual incluye los datos de los usuarios. 
+   * @description Este método se encarga de cargar una lista de usuarios desde el servidor, empezando desde un índice especificado. Realiza una solicitud HTTP GET al endpoint correspondiente, utilizando los headers de autenticación. Devuelve un observable que emite los datos de los usuarios obtenidos del servidor.
+   * @param { number } from - El índice desde el cual comenzar a cargar los usuarios. Valor por defecto es 0.
+   * @returns { Observable<CargarUsuario> } - Un observable que emite la respuesta del servidor, la cual incluye los datos de los usuarios.
    */
-  cargarUsuarios( from: number = 0 ): Observable<CargarUsuario> {
-    const url = `${ base_url }/usuarios/?from=${ from }`;
-    return this.http.get<CargarUsuario>( url, this.headers )
-      .pipe(
-        map( resp => {
-          const usuarios = resp.usuarios.map( 
-            user => new Usuario( 
-              user.name, user.email, '', user.img, user.google, user.role, user.uid 
+  cargarUsuarios(from: number = 0): Observable<CargarUsuario> {
+    const url = `${base_url}/usuarios/?from=${from}`;
+    return this.http.get<CargarUsuario>(url, this.headers).pipe(
+      map((resp) => {
+        const usuarios = resp.usuarios.map(
+          (user) =>
+            new Usuario(
+              user.name,
+              user.email,
+              '',
+              user.img,
+              user.google,
+              user.role,
+              user.uid
             )
-          );
-          return { 
-            total: resp.total,
-            usuarios
-          };
-        })
-      );
-  };
+        );
+        return {
+          total: resp.total,
+          usuarios,
+        };
+      })
+    );
+  }
 
   /**
    * @name eliminarUsuario
@@ -295,10 +314,10 @@ export class UsuarioService {
    * @param { Usuario } usuario - El usuario que se desea eliminar.
    * @returns { Observable<any> } - Un observable que emite la respuesta del servidor.
    */
-  elimianrUsuario( usuario: Usuario ): Observable<any> {
-    const url = `${ base_url }/usuarios/${ usuario.uid }`;
-    return this.http.delete( url, this.headers );
-  };
+  elimianrUsuario(usuario: Usuario): Observable<any> {
+    const url = `${base_url}/usuarios/${usuario.uid}`;
+    return this.http.delete(url, this.headers);
+  }
 
   /**
    * @name guardarUsuario
@@ -306,7 +325,11 @@ export class UsuarioService {
    * @param { Usuario } usuario - El usuario cuyos datos se desean actualizar.
    * @returns { Observable<Object> } - Un observable que emite la respuesta del servidor.
    */
-  guardarUsuario( usuario: Usuario ): Observable<Object> {
-    return this.http.put( `${ base_url }/usuarios/${ usuario.uid }`, usuario, this.headers );
-  };
+  guardarUsuario(usuario: Usuario): Observable<Object> {
+    return this.http.put(
+      `${base_url}/usuarios/${usuario.uid}`,
+      usuario,
+      this.headers
+    );
+  }
 }

@@ -20,6 +20,9 @@ import { MedicoComponent } from './mantenimientos/medicos/medico.component';
 import { MedicosComponent } from './mantenimientos/medicos/medicos.component';
 import { UsuariosComponent } from './mantenimientos/usuarios/usuarios.component';
 
+// Guards
+import { adminGuard } from '../guards/admin.guard';
+
 
 const routes: Routes = [
   {
@@ -40,7 +43,9 @@ const routes: Routes = [
       { path: 'hospitales', component: HospitalesComponent, data: { title: 'Mantenimiento de Hospitales' } },
       { path: 'medico/:id', component: MedicoComponent, data: { title: 'Mantenimiento de Médicos' } },
       { path: 'medicos', component: MedicosComponent, data: { title: 'Mantenimiento de Médicos' } },
-      { path: 'usuarios', component: UsuariosComponent, data: { title: 'Mantenimiento de Usuarios' } },
+
+      // Rutas de Admin
+      { path: 'usuarios', canActivate: [ adminGuard ], component: UsuariosComponent, data: { title: 'Mantenimiento de Usuarios' } },
     ],
   },
 ];
