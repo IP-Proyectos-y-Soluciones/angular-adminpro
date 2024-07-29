@@ -11,14 +11,19 @@ import { Usuario } from '../../models/usuario.model';
 })
 export class SidebarComponent {
 
-  public menuItems: any[];
   public usuario: Usuario;
 
+  /**
+   * @constructor
+   * @description Constructor del componente. Se utiliza para inyectar los servicios `SidebarService` y `UsuarioService` en la clase del componente.
+   * Además, se inicializa la propiedad `usuario` con el valor proporcionado por el servicio `UsuarioService` al momento de crear una instancia del componente.
+   * @param sidebarService - Servicio utilizado para gestionar y cargar el menú lateral del componente.
+   * @param usuarioService - Servicio utilizado para gestionar la información del usuario. 
+   */
   constructor( 
-    private sidebarServive: SidebarService, 
+    public sidebarService: SidebarService, 
     private usuarioService: UsuarioService,  
   ) {
-    this.menuItems = this.sidebarServive.menu;
     this.usuario = this.usuarioService.usuario;
   };
 }

@@ -92,6 +92,19 @@ export class UsuarioService {
   };
 
   /**
+   * @name guardarLocalStorage
+   * @description Este método almacena un token de autenticación y un menú en el almacenamiento local del navegador (localStorage). 
+   * Se utiliza para guardar el estado de autenticación y la configuración del menú del usuario de forma persistente en el navegador.
+   * @param { string } token - El token de autenticación que se guardará en el localStorage.
+   * @param { any } menu - El menú que se guardará en el localStorage. Puede ser un objeto que representa las opciones de navegación disponibles para el usuario.
+   * @returns { void } - Este método no devuelve ningún valor.
+   */
+  guardarLocalStorage( token: string, menu: any ): void {
+    localStorage.setItem( 'token', token );
+    localStorage.setItem( 'menu', JSON.stringify( menu ) );
+  };
+
+  /**
   * @name ensureGoogleInitialized
   * @description Este método garantiza que la biblioteca de autenticación de Google esté completamente inicializada
   * antes de realizar cualquier operación que dependa de ella. Retorna una promesa que se resuelve cuando la inicialización
@@ -135,6 +148,7 @@ export class UsuarioService {
             this.router.navigateByUrl( '/login' );
           });
           localStorage.removeItem( 'token' );
+          localStorage.removeItem( 'menu' );
         });
       } else {
         console.warn( 'No se encontró ningún email en localStorage. Es posible que el usuario no esté autenticado en Google.' );
@@ -142,6 +156,7 @@ export class UsuarioService {
           this.router.navigateByUrl('/login');
         });
         localStorage.removeItem('token');
+        localStorage.removeItem('menu');
       };
     });
   };
@@ -167,7 +182,8 @@ export class UsuarioService {
         const { name, email, img = '', google, role, uid, } = resp.usuario;
 
         this.usuario = new Usuario( name, email, '', img, google, role, uid, );
-        localStorage.setItem( 'token', resp.token );
+
+        this.guardarLocalStorage( resp.token, resp.menu );
 
         return true;
       }),
@@ -187,7 +203,7 @@ export class UsuarioService {
     return this.http.post( `${ base_url }/usuarios`, formData )
       .pipe( 
         tap(( resp: any ) => {
-          localStorage.setItem( 'token', resp.token );
+          this.guardarLocalStorage( resp.token, resp.menu );
           // console.log( resp );
         })
       );
@@ -227,7 +243,7 @@ export class UsuarioService {
     return this.http.post( `${ base_url }/login`, formData )
       .pipe( 
         tap(( resp: any ) => {
-          localStorage.setItem( 'token', resp.token );
+          this.guardarLocalStorage( resp.token, resp.menu );
           // console.log( resp );
         })
       );
@@ -244,7 +260,7 @@ export class UsuarioService {
       .pipe( 
         tap(( resp: any ) => {
           // console.log( resp );
-          localStorage.setItem( 'token', resp.token );
+          this.guardarLocalStorage( resp.token, resp.menu );
         })
       );
   };
