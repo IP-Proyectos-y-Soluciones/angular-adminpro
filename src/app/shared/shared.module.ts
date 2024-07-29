@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
+// Módulos
+import { FormsModule } from '@angular/forms';
 
 // Componentes
 import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
@@ -23,7 +25,8 @@ import { HeaderComponent } from './header/header.component';
   ],
   imports: [
     CommonModule,
-    RouterModule,
+    RouterModule, 
+    FormsModule, 
   ]
 })
 export class SharedModule { }

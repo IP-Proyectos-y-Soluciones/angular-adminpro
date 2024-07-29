@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { UsuarioService } from '../../services/usuario.service';
 import { Usuario } from '../../models/usuario.model';
@@ -20,7 +21,8 @@ export class HeaderComponent {
   * @param { UsuarioService } usuarioService - El servicio encargado de las operaciones relacionadas con los usuarios.
   */
   constructor( 
-    private usuarioService: UsuarioService 
+    private usuarioService: UsuarioService, 
+    private router: Router,  
   ) { 
     this.usuario = this.usuarioService.usuario;
   }
@@ -35,4 +37,19 @@ export class HeaderComponent {
     this.usuarioService.logout();
   };
 
+  /**
+   * @name buscar
+   * @description Este método redirige al usuario a una página de resultados de búsqueda dentro de la aplicación. 
+   * Utiliza el servicio `router` para navegar a la ruta de búsqueda especificada, pasando el término de búsqueda como parte de la URL. 
+   * Esto permite actualizar la vista y mostrar los resultados de la búsqueda correspondiente al término ingresado por el usuario.
+   * @param { string } termino - El término de búsqueda que se desea buscar.
+   * @returns { void } - Este método no devuelve ningún valor.
+   */
+  buscar( termino: string ): void {
+    if ( termino.length === 0 ) {
+      return;
+    };
+
+    this.router.navigateByUrl( `/dashboard/buscar/${ termino }` );
+  };
 }
