@@ -87,6 +87,19 @@ export class BusquedasService {
   };
 
   /**
+   * @name busquedaGlobal
+   * @description Este método realiza una búsqueda global en el servidor utilizando un término de búsqueda proporcionado. 
+   * Construye la URL de la solicitud utilizando la base de la URL (`base_url`) y el término de búsqueda (`termino`).
+   * Realiza una solicitud HTTP GET a la URL construida, incluyendo los encabezados necesarios para la autenticación.
+   * @param { string } termino - El término de búsqueda que se utilizará para buscar datos en el servidor.
+   * @returns { Observable<Object> } - Un observable que emite la respuesta del servidor, que contiene los resultados de la búsqueda.
+   */
+  busquedaGlobal( termino: string ): Observable<Object> {
+    const url = `${ base_url }/todo/${ termino }`;
+    return this.http.get( url, this.headers )
+  };
+
+  /**
    * @name buscar
    * @description Este método se encarga de realizar una búsqueda en el backend para los usuarios, médicos o hospitales que coincidan con el término de búsqueda especificado. Hace una solicitud HTTP GET al endpoint correspondiente y utiliza los headers de autenticación. Devuelve un observable que se puede suscribir para manejar la respuesta del servidor. El observable emite la respuesta de la solicitud HTTP con la lista de coincidencias.
    * @param { 'usuarios'|'medicos'|'hospitales' } tipo - El tipo de entidad a la que se busca coincidencias.
